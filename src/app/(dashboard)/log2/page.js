@@ -1,0 +1,143 @@
+"use client";
+import React, { useState, useEffect, Suspense } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
+
+const MeterDataComponent = () => {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  const allowedTypes = ["volts", "power", "energy"];
+  const [type, setType] = useState(() => {
+    const queryType = searchParams.get("type") || "volts";
+    return allowedTypes.includes(queryType) ? queryType : "volts";
+  });
+
+  // Retrieve meter and id from URL or sessionStorage
+  const meter = searchParams.get("meter") || sessionStorage.getItem("meter") || "Unknown";
+  const id = searchParams.get("id") || sessionStorage.getItem("id") || "Unknown";
+
+  // Store meter and id in sessionStorage
+  useEffect(() => {
+    console.log("Meter from URL:", searchParams.get("meter"));
+    console.log("Meter from sessionStorage:", sessionStorage.getItem("meter"));
+
+    if (meter !== "Unknown") {
+      sessionStorage.setItem("meter", meter);
+      console.log("Meter saved to sessionStorage:", meter);
+    }
+    if (id !== "Unknown") {
+      sessionStorage.setItem("id", id);
+      console.log("ID saved to sessionStorage:", id);
+    }
+  }, [meter, id]);
+
+  // Allowed meters
+  const allowedMeters = {
+    U_7_EM7: "New Centac Com#2",
+    U_9_EM9: "New Centac Com#1",
+  };
+
+  const isValidMeter = allowedMeters.hasOwnProperty(meter);
+
+  const getImageSrc = () => {
+    switch (type) {
+      case "volts":
+        return "Log.png";
+      case "power":
+        return "harmonics.png";
+      case "energy":
+        return "Log_2.png";
+      default:
+        return ""; // Default image if type is invalid
+    }
+  };
+
+  const getMapAreas = () => {
+    switch (type) {
+      case "volts":
+        return [
+          { coords: "690,280,790,200", href: `/log_detail?meter=${meter}&val=volt&type=volts` },
+          { coords: "690,330,790,410", href: `/log_detail?meter=${meter}&val=current&type=current` },
+          { coords: "690,550,790,470", href: `/log_detail?meter=${meter}&val=power_factor&type=power_factor` },
+          { coords: "1000,100,1250,35", href: `/sld_meters1?id=${id}&meter=${meter}` },
+        ];
+      case "power":
+        return [
+          { coords: "690,220,810,150", href: `/log_detail?meter=${meter}&val=active_power&type=active_power` },
+          { coords: "690,240,790,310", href: `/log_detail?meter=${meter}&val=reactive_power&type=reactive_power` },
+          { coords: "690,440,790,370", href: `/log_detail?meter=${meter}&val=apparent_power&type=apparent_power` },
+          { coords: "690,600,790,460", href: `/log_detail?meter=${meter}&val=harmonics&type=harmonics` },
+          { coords: "1000,100,1250,35", href: `/sld_meters1?id=${id}&meter=${meter}` },
+        ];
+      case "energy":
+        return [
+          { coords: "690,280,790,200", href: `/log_detail?meter=${meter}&val=active_energy&type=active_energy` },
+          { coords: "690,420,790,350", href: `/log_detail?meter=${meter}&val=reactive_energy&type=reactive_energy` },
+          { coords: "690,580,790,480", href: `/log_detail?meter=${meter}&val=apparent_energy&type=apparent_energy` },
+          { coords: "1000,100,1250,35", href: `/sld_meters1?id=${id}&meter=${meter}` },
+        ];
+      default:
+        return [];
+    }
+  };
+
+  if (!isValidMeter) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <h1 className="text-2xl font-bold text-red-500">Invalid Meter: {meter}</h1>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex-shrink-0 w-full p-6 h-[85vh] rounded-[8px] bg-[#fff] border-2 border-[grey] border-t-[4px] border-t-[#1d5999] relative">
+    <h1 className="text-2xl font-extrabold text-gray-700 mb-4">Logs</h1>
+
+    <div
+      className="relative overflow-x-auto overflow-y-hidden rounded"
+      style={{ maxWidth: "1350px", maxHeight: "700px" }}
+      >
+        <img
+          src={getImageSrc()}
+          alt={`${type} Diagram`}
+          useMap="#workmap"
+          className="min-w-[1300px] h-[640px]"
+        />
+
+        <map name="workmap">
+          {getMapAreas().map((area, index) => (
+            <area
+              key={index}
+              shape="rect"
+              coords={area.coords}
+              href={area.href}
+              onClick={(e) => {
+                e.preventDefault(); // Prevent default browser navigation
+                const newType = area.type;
+                if (newType && allowedTypes.includes(newType)) {
+                  setType(newType); // Update the type dynamically
+                  router.push(area.href); // Navigate to the next page
+                } else {
+                  router.push(area.href); // Navigate without updating type
+                }
+              }}
+              style={{ cursor: "pointer" }}
+            />
+          ))}
+        </map>
+      </div>
+    </div>
+  );
+};
+
+
+const LogsPage = () => {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <MeterDataComponent />
+    </Suspense>
+  );
+};
+
+
+export default LogsPage;

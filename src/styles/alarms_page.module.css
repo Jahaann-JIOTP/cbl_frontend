@@ -1,0 +1,205 @@
+/* Card styles */
+.card {
+  width: 100%; 
+  max-width: 1200px; 
+  height: auto;
+  padding: 20px;
+  margin: 50px auto;
+  background-color: #e0e1dd; /* Light neutral color */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  border-radius: 10px; /* Rounded corners */
+  text-align: center;
+  font-family: Arial, sans-serif;
+  margin-top: 5px;
+  border: 2px solid #808080;
+}
+
+/* Hover effect for the card */
+.card:hover {
+  border-color: #0056b3; 
+}
+
+
+
+.topSection {
+  height: 4.5px;
+  width: calc(77.5vw - 20px); /* Adjust width to fit within viewport with margin consideration */
+  max-width: 1200px; /* Maximum width */
+  background-color: #1f5897;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  margin-left: -18px; 
+  margin-top: -20px; /* Reset any negative margins */
+  box-sizing: border-box; /* Ensure padding/borders are considered in width */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+
+
+
+
+
+
+.card-title {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: #333;
+}
+.dropdown-option{
+  width: 10vw;
+}
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+.dropdown-button {
+  width: 100%; 
+  background-color: #337ab7;
+  color: white;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+
+
+/* Common dropdown content styles */
+/* Common dropdown content styles */
+.dropdown-content {
+  display: none; /* Hidden by default */
+  position: absolute;
+  background-color: #e0e1dd;
+  width: 100%; /* Ensure it's full width */
+  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
+  z-index: 1;
+}
+
+.dropdown-content a {
+  color: black; /* Initial color */
+  padding: 0 16px;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 50px;
+  line-height: 50px;
+}
+
+/* Change color when hovered over */
+.dropdown-content a:hover {
+  background-color: rgb(161, 175, 182); /* Change to desired background color */
+  color: black; /* Change text color when hovered */
+}
+
+
+/* Option-specific dropdown */
+.option-dropdown {
+  position: relative;
+}
+
+.dropdown-content1 {
+  display: none;
+  position: absolute;
+  background-color: #e0e1dd;
+  width: 100%;
+  max-width: 900px;
+  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
+  z-index: 1;
+}
+
+.dropdown-content1 a {
+  color: black;
+  padding: 0 16px; 
+  text-decoration: none;
+  display: flex;   
+  align-items: center;   
+  justify-content: center; 
+  height: 50px; 
+  line-height: 50px; 
+}
+.dropdown-content1 a:hover {
+  background-color: rgb(161, 175, 182); 
+  color: black; 
+}
+
+
+/* .dropdown:hover .dropdown-content1 {
+  display: block;
+} */
+
+
+.status-message {
+  margin-top: 20px;
+  font-size: 18px;
+  color: #555;
+}
+
+.submit-button {
+  height: 35px; 
+  padding: 0 10px; 
+  font-size: 10.2px;
+  font-weight: bold;
+  background-color: #0a89af;
+  color:white;
+  width: 180px;
+  margin: 0 5px; 
+  flex: 1; 
+  max-width: 150px; 
+  height: 35px; 
+ 
+  padding: 10px;
+  cursor: pointer;
+  border: 1px solid #ccc; 
+  border-radius: 5px; 
+  margin-left: -2px;
+  font-size: 12px;
+margin-top: 20px;}
+.submit-button:hover {
+  background-color: #337ab7;
+}
+
+.option-dropdown {
+  margin-top: 20px;
+  display: none;
+}
+
+.input-container {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.input-label {
+  font-size: 14px;
+  color: #555;
+  margin-bottom: 5px;
+  font-weight: 600;
+ 
+}
+
+.input-field {
+  width: 100%;
+  padding: 8px;
+  font-size: 16px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.input-field:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+  outline: none;
+}
+

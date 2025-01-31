@@ -1,0 +1,187 @@
+.card {
+    width: 100%;
+    max-width: 1200px;
+    border: 2px solid black;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    height: 88vh;
+  }
+  
+  .topSection {
+    height: 4px;
+    background-color: #0077b6;
+  }
+  
+  .content {
+    padding: 16px;
+    font-size: 20px;
+  
+  }
+  
+  .content h1 {
+    font-size: 1.5rem;
+    margin: 0 0 8px;
+    color: #333;
+  }
+  
+  
+  .card_medium {
+    width: 100%;
+    max-width: 1130px;
+    min-width: 280px;
+    margin: 10px auto;
+    border: none;
+    background-color: #e0e1dd;
+    display: flex;
+    flex-direction: row; 
+    flex-wrap: wrap; 
+    justify-content: center; 
+    align-items: center; 
+    gap: 1vw;
+    box-sizing: border-box;
+  }
+  
+  @media (max-width: 768px) {
+    .card_medium {
+      width: 95vw;
+      padding: 2vw;
+      flex-direction: column; 
+      height: auto; 
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .card_medium {
+      width: 100vw;
+      padding: 3vw;
+      flex-direction: column;
+      height: auto;
+    }
+  }
+  
+  .card_Small {
+    width: 95%;
+    max-width: 1150px;
+    height: 70%;
+    margin: 10px;
+    border: none;
+    background-color: #e0e1dd;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .label {
+    font-weight: bold;
+    color: #555;
+    margin-right: 10px;
+  }
+  
+  .form_Row {
+    display: flex;
+    justify-content: center; 
+    align-items: center; 
+    gap: 1vw; 
+    flex-wrap: wrap; 
+  }
+  .selector,
+  .datePicker,
+  .generateButton {
+    margin: 0 5px; 
+    flex: 1; 
+    max-width: 150px; 
+    height: 35px; 
+    background-color: #dee2e6;
+    padding: 10px;
+    cursor: pointer;
+    border: 1px solid #ccc; 
+    border-radius: 5px; 
+    margin-left: -2px;
+    font-size: 12px;
+  }
+  
+  
+  
+  .selector{
+    font-size: 12px;
+  }
+  
+  .meterDropdown {
+    position: relative;
+    flex: 1;
+    max-width: 200px;
+    margin: 0 5px; 
+  
+  }
+  
+  .generateButton {
+    height: 35px; 
+    padding: 0 10px; 
+    font-size: 10.2px;
+    font-weight: bold;
+    background-color: #0a89af;
+    color:white;
+    width: 180px;
+  }
+  
+  .generateButton:hover {
+    background-color: #023e8a;  
+  }
+  
+  .dropdownBtn {
+    font-size: 12px; 
+    margin-top: -1px; 
+    padding: 10px;
+    cursor: pointer;
+    background-color: #dee2e6; 
+    color: black; 
+    height: 35px;
+    width: 120px;
+    border: 1px solid #ccc; 
+    border-radius: 5px; 
+    text-align: center;
+    
+  }
+  
+  
+  .checkboxGroup {
+    margin-top: -35px;
+    margin-left:11px; 
+  }
+  
+  .checkboxGroup label {
+    font-size: 16px; 
+  }
+  
+  
+  
+  .checkboxGroup {
+    position: absolute;
+    top: 69px;
+    left: -10px;
+    z-index: 1;
+    border-color: black;
+    background-color: #dee2e6; 
+    border: 1px solid grey;
+    border-radius: 4px;
+    padding: 10px;
+     border-radius: 5px; 
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    width: 100%;
+  }
+  
+  .checkboxGroup label {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px; 
+    font-size: 12px;
+  }
+  
+  .checkboxGroup input {
+    margin-right: 8px;
+  }
+  
+  .parameter-icon {
+    margin-left: 10px;
+  }
+  
