@@ -169,7 +169,7 @@ const AddProduction = () => {
               <th className="border border-gray-300 px-4 py-2">Sewing2</th>
               <th className="border border-gray-300 px-4 py-2">Textile</th>
               <th className="border border-gray-300 px-4 py-2">Sewing1</th>
-              <th className="border border-gray-300 px-4 py-2">PG</th>
+              <th className="border border-gray-300 px-4 py-2">PG </th>
               <th className="border border-gray-300 px-4 py-2">Actions</th>
             </tr>
           </thead>
