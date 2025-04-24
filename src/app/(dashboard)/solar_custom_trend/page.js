@@ -6,24 +6,53 @@ import "@amcharts/amcharts4/themes/animated";
 
 function CustomTrendsolar() {
   const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
-  const [selectedMeter, setSelectedMeter] = useState([]);
-  const [selectedParameter, setSelectedParameter] = useState("");
-  const [chartData, setChartData] = useState([]);
+const [endDate, setEndDate] = useState("");
+const [selectedMeter, setSelectedMeter] = useState([]);
+const [selectedParameter, setSelectedParameter] = useState("");
+const [chartData, setChartData] = useState([]);
 
-  const [showMeters, setShowMeters] = useState(false);
-  const [showParameters, setShowParameters] = useState(false);
+const [showMeters, setShowMeters] = useState(false);
+const [showParameters, setShowParameters] = useState(false);
 
-  const meterMapping = {
-    "Solar 1": "U11_SM11",
-    "Solar 2": "U12_SM12",
-  };
+const meterMapping = {
+  "Solar SPNG": "U11_SM11",
+  "Solar SWNG": "U12_SM12",
+  "Solar Hostel": "U_22",  // ✅ New Meter Added
+};
 
   const parameterMapping = {
     "Total Active Power": "ActivePower_EXP_Total_kW",
     "Daily Power Yield": "PowerYield_EXP_Daily_kWh",
     "Total Power Yield": "PowerYield_EXP_Total_kWh",
     "ReAPower Total": "ReAPower_EXP_Total_var",
+
+     
+    "Active Energy Delv": "ActiveEnergy_Delivered_kWh",
+    "Active Energy Total": "ActiveEnergy_Total_kWh",
+    "Active Power A": "ActivePower_A_kW",
+    "Active Power B": "ActivePower_B_kW",
+    "Active Power C": "ActivePower_C_kW",
+    "Active Power Total": "ActivePower_Total_kW",
+    "Current A": "Current_AN_Amp",
+    "Current B": "Current_BN_Amp",
+    "Current C": "Current_CN_Amp",
+    "Current Total": "Current_Total_Amp",
+    "Frequency": "Frequency_Hz",
+    "Power Factor Total": "PowerFactor_Total",
+    "Reactive Power A": "ReactivePower_A_kVAR",
+    "Reactive Power B": "ReactivePower_B_kVAR",
+    "Reactive Power C": "ReactivePower_C_kVAR",
+    "Reactive Power Total": "ReactivePower_Total_kVAR",
+    "Voltage A": "Voltage_AN_V",
+    "Voltage B": "Voltage_BN_V",
+    "Voltage C": "Voltage_CN_V",
+    "Voltage LN": "Voltage_LN_V",
+    "Voltage AB": "Voltage_AB_V",
+    "Voltage BC": "Voltage_BC_V",
+    "Voltage CA": "Voltage_CA_V",
+    "Voltage LL": "Voltage_LL_V",
+    
+    
   };
 
   const meters = Object.keys(meterMapping);
@@ -104,7 +133,7 @@ function CustomTrendsolar() {
       //minimum range
       var range1 = valueAxis.axisRanges.create();
       range1.value = min;
-      range1.grid.stroke = am4core.color("#7be382");
+      range1.grid.stroke = am4core.color("#02b169");
       range1.grid.strokeWidth = 2;
       range1.grid.strokeOpacity = 1;
       range1.label.inside = true;
@@ -131,7 +160,7 @@ function CustomTrendsolar() {
         series.dataFields.valueY = meter;
         series.dataFields.dateX = "timestamp";
         series.name = meter;
-        series.tooltipText = "{name}\n{dateX}: [b]{valueY} KW";
+        series.tooltipText = "{name}\n{dateX}: [b]{valueY}[/";
         series.strokeWidth = 3;
         series.minBulletDistance = 15;
         series.stroke = colorSet.list[index % colorSet.list.length];

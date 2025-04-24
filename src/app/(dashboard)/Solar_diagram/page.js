@@ -7,7 +7,7 @@ function Page() {
 
   const fetchData = async () => {
     try {
-      const response = await fetch("https://www.cblapi.jiotp.com/cbl_backend/diagram_data2.php");
+      const response = await fetch("https://cblapi.jiotp.com/diagram_data2.php");
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }

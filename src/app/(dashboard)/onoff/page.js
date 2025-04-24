@@ -180,7 +180,7 @@ function DashboardPage() {
     setEnergyLoading4(true);
     setEnergyError4(null);
 
-    const apiUrl4 = `${process.env.NEXT_PUBLIC_API_BASE_URL}/centaccompon.php?start_date=${startDate}&end_date=${endDate}`;
+    const apiUrl4 = `${process.env.NEXT_PUBLIC_API_BASE_URL}/centacccompon.php?start_date=${startDate}&end_date=${endDate}`;
 
     try {
       const response = await fetch(apiUrl4);
@@ -238,7 +238,7 @@ function DashboardPage() {
     setEnergyLoading6(true);
     setEnergyError6(null);
 
-    const apiUrl6 = `${process.env.NEXT_PUBLIC_API_BASE_URL}/centacccompon.php?start_date=${startDate}&end_date=${endDate}`;
+    const apiUrl6 = `${process.env.NEXT_PUBLIC_API_BASE_URL}/centaccompon.php?start_date=${startDate}&end_date=${endDate}`;
 
     try {
       const response = await fetch(apiUrl6);

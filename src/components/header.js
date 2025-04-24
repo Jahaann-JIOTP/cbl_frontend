@@ -24,7 +24,7 @@ const Header = ({ handleTabClick }) => {
       >
         <p
           className={`px-3 py-1 cursor-pointer rounded-lg flex gap-1 ${
-            pathname === "/dashboard" ||  pathname === "/onoff"  ||  pathname === "/sankey"  ||  pathname === "/onoff1" ||  pathname === "/production_dash" ||  pathname === "/add_production" ? "bg-white text-black" : ""
+            pathname === "/dashboard" ||  pathname === "/onoff"  ||  pathname === "/sankey"  ||  pathname === "/onoff1" ||  pathname === "/production_dash" ||  pathname === "/add_production"  ||  pathname === "/Compresser_Efficiency" ? "bg-white text-black" : ""
           }`}
         >
           <FontAwesomeIcon icon={faDashboard} style={{ fontSize: "1.1em", width: "1.1em", height: "1.1em" }} /> DASHBOARD

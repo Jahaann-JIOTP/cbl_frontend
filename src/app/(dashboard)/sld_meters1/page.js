@@ -21,9 +21,9 @@ const MeterDataComponent = () => {
   useEffect(() => {
     const meterTitles = {
     
-      U_7_EM7: "New Centac Com#2",
+      U_7_EM7: "New Centac Com#1",
      
-      U_9_EM9: "New Centac Com#1",
+      U_9_EM9: "New Centac Com#2",
     //   U_15: "Dryer",
     //   U_21: "Janitza",
      
@@ -68,18 +68,18 @@ const MeterDataComponent = () => {
 
    useEffect(() => {
      // Set the initial link for the default tab
-     setLink(`https://www.cblapi.jiotp.com/cbl_backend/volts_data1.php?meter=${meter}`);
+     setLink(`https://cblapi.jiotp.com/volts_data1.php?meter=${meter}`);
    }, [meter]);
 
    const handleTabSwitch = (tab) => {
     setActiveTab(tab);
 
     if (tab === "volts") {
-      setLink(`https://www.cblapi.jiotp.com/cbl_backend/volts_data1.php?meter=${meter}`);
+      setLink(`https://cblapi.jiotp.com/volts_data1.php?meter=${meter}`);
     } else if (tab === "power") {
-      setLink(`https://www.cblapi.jiotp.com/cbl_backend/power_data1.php?meter=${meter}`);
+      setLink(`https://cblapi.jiotp.com/power_data1.php?meter=${meter}`);
     } else if (tab === "energy") {
-      setLink(`https://www.cblapi.jiotp.com/cbl_backend/energy_data1.php?meter=${meter}`);
+      setLink(`https://cblapi.jiotp.com/energy_data1.php?meter=${meter}`);
     } else {
       setLink(""); // Handle other cases if needed
     }

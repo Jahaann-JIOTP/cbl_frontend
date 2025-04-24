@@ -35,7 +35,7 @@ function CustomTrendcom() {
 
   useEffect(() => {
     if (startDate && endDate && selectedMeter.length > 0 && selectedParameter) {
-      const apiUrl = `https://www.cblapi.jiotp.com/cbl_backend/custom_air.php?start_date=${startDate}&end_date=${endDate}&meterId=${selectedMeter
+      const apiUrl = `https://cblapi.jiotp.com/custom_air.php?start_date=${startDate}&end_date=${endDate}&meterId=${selectedMeter
         .map((m) => meterMapping[m])
         .join(",")}&suffixes=${parameterMapping[selectedParameter]}`;
 
@@ -134,7 +134,7 @@ function CustomTrendcom() {
       //minimum range
       var range1 = valueAxis.axisRanges.create();
       range1.value = min;
-      range1.grid.stroke = am4core.color("#7be382");
+      range1.grid.stroke = am4core.color("#02b169");
       range1.grid.strokeWidth = 2;
       range1.grid.strokeOpacity = 1;
       range1.label.inside = true;

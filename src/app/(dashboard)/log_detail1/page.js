@@ -115,7 +115,7 @@ const MeterDataComponent = () => {
     setError("");
 
     try {
-      const response = await axios.get("https://www.cblapi.jiotp.com/cbl_backend/log2_data.php", {
+      const response = await axios.get("https://cblapi.jiotp.com/log2_data.php", {
         params: {
           type, // Dynamically determined type (voltage, current, power_factor)
           meters: meter, // Dynamically retrieved meter value

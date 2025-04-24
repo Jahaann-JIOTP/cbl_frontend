@@ -13,7 +13,7 @@ function LoginForm() {
     e.preventDefault(); // Prevent default form submission
 
     try {
-      const response = await fetch("https://www.cblapi.jiotp.com/cbl_backend/login.php", {
+      const response = await fetch("https://cblapi.jiotp.com/login.php", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

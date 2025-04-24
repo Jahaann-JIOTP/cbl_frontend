@@ -62,7 +62,7 @@ const ExamplePage = () => {
       // Prepare query parameters
       const meterIds = encodeURIComponent(JSON.stringify(selectedMeters));
       const suffixes = encodeURIComponent(JSON.stringify(["TotalFlow"])); // Fixed suffix
-      const apiUrl = `https://www.cblapi.jiotp.com/cbl_backend/production_cost_report.php?meterIds=${meterIds}&suffixes=${suffixes}&start_date=${startDate}&end_date=${endDate}`;
+      const apiUrl = `https://cblapi.jiotp.com/production_cost_report.php?meterIds=${meterIds}&suffixes=${suffixes}&start_date=${startDate}&end_date=${endDate}`;
 
       const response = await fetch(apiUrl);
 
@@ -102,75 +102,53 @@ const ExamplePage = () => {
     setRates(parseFloat(e.target.value) || 0); // Convert input to number
   };
   const handleExport = () => {
-    // Prepare data for Excel
-    const headers = [
-      "No",
-      "Sources",
-      "SCF",
-      "Unit Price (PKR)",
-      "Total Price (PKR)",
-    ];
-    const rows = fetchedData.map((item, index) => {
-      const totalPrice = item.consumption * rates;
-      return [
-        index + 1,
-        meters.find((meter) => meter.id === item.meterId)?.name,
-        item.consumption.toFixed(2),
-        rates,
-        totalPrice.toFixed(2),
-      ];
+    if (!fetchedData) {
+      alert("No data available to export.");
+      return;
+    }
+  
+    const transformedData = [];
+    const meterSubtotals = { GWP: 0, Airjet: 0, Sewing2: 0, Textile: 0, Sewing1: 0, PG: 0, Total: 0 };
+    const allMeters = ["GWP", "Airjet", "Sewing2", "Textile", "Sewing1", "PG"];
+    const nonZeroColumns = new Set();
+  
+    Object.keys(fetchedData).forEach((date) => {
+      const dailyData = fetchedData[date];
+      const row = { Date: date };
+  
+      let subtotal = 0;
+      allMeters.forEach((meter) => {
+        let value = (dailyData[`${meter}_total_flow`] || 0) * (rates || 1);
+        value = parseFloat(value.toFixed(2)); // Round to 2 decimal places
+        row[meter] = value;
+        subtotal += value;
+        if (value !== 0) nonZeroColumns.add(meter);
+        meterSubtotals[meter] += value;
+      });
+  
+      row.SubTotal = parseFloat(subtotal.toFixed(2)); // Round subtotal
+      meterSubtotals.Total += subtotal;
+      transformedData.push(row);
     });
-
-    // Add title row and empty row
-    const titleRow = ["Compressed Air Production Cost Report"];
-    const dataForExcel = [titleRow, [], headers, ...rows];
-
-    // Convert to worksheet
-    const worksheet = XLSX.utils.aoa_to_sheet(dataForExcel);
-
-    // Merge cells for the title row
-    worksheet["!merges"] = [
-      { s: { r: 0, c: 0 }, e: { r: 0, c: headers.length - 1 } }, // Merge title across all columns
-    ];
-
-    // Apply styles
-    const titleCellAddress = XLSX.utils.encode_cell({ r: 0, c: 0 });
-    worksheet[titleCellAddress] = {
-      v: "Compressed Air Production Cost Report",
-      s: {
-        fill: { fgColor: { rgb: "0070C0" } }, // Blue background
-        font: { sz: 16, bold: true, color: { rgb: "FFFFFF" } }, // White bold text
-        alignment: { horizontal: "center", vertical: "center" }, // Center align
-      },
-    };
-
-    // Apply styles to header cells
-    headers.forEach((_, colIndex) => {
-      const cellAddress = XLSX.utils.encode_cell({ r: 2, c: colIndex }); // Row 2 for headers
-      if (!worksheet[cellAddress]) worksheet[cellAddress] = {}; // Ensure cell exists
-      worksheet[cellAddress].s = {
-        fill: { fgColor: { rgb: "0070C0" } }, // Blue background
-        font: { color: { rgb: "FFFFFF" }, bold: true, sz: 14 }, // White bold text
-        alignment: { horizontal: "center", vertical: "center" }, // Center align
-      };
+  
+    const totalRow = { Date: "Total Price (PKR)" };
+    allMeters.forEach((meter) => {
+      totalRow[meter] = parseFloat(meterSubtotals[meter].toFixed(2)); // Round total values
     });
-
-    // Set column widths for better readability
-    worksheet["!cols"] = [
-      { wpx: 50 }, // Width for "No"
-      { wpx: 150 }, // Width for "Sources"
-      { wpx: 100 }, // Width for "SCF"
-      { wpx: 120 }, // Width for "Unit Price (PKR)"
-      { wpx: 150 }, // Width for "Total Price (PKR)"
-    ];
-
-    // Create workbook and append worksheet
+    totalRow.SubTotal = parseFloat(meterSubtotals.Total.toFixed(2)); // Round total subtotal
+    transformedData.push(totalRow);
+  
+    // Ensure "SubTotal" is the last column
+    const filteredMeters = [...allMeters.filter((meter) => nonZeroColumns.has(meter)), "SubTotal"];
+    const worksheet = XLSX.utils.json_to_sheet(transformedData, { header: ["Date", ...filteredMeters] });
+  
     const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Billing Report");
-
-    // Export to Excel file
-    XLSX.writeFile(workbook, "Electricity_Production_Cost_Report.xlsx");
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
+    XLSX.writeFile(workbook, "Production_Report.xlsx");
   };
+  
+  
+  
 
   if (isSubmitted && fetchedData) {
     console.log("Fetched Data:", fetchedData);

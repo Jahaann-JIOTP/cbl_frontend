@@ -30,6 +30,18 @@ function DashboardPage() {
   const [unit2, setUnit2] = useState("m³ / kWh"); // Unit for second divF
   const [unit3, setUnit3] = useState("m3"); // Default unit is SCF
   const [timePeriod, setTimePeriod] = useState("month"); // Default time period is "month"
+  const [energyLoading4, setEnergyLoading4] = useState(false);
+  const [energyError4, setEnergyError4] = useState(null);
+  const [unit4, setUnit4] = useState("m3");
+  const [timePeriod1, setTimePeriod1] = useState("month");
+
+  // Toggle the expansion of a specific card
+  // const toggleExpand = (cardKey) => {
+  //   setExpandedCards((prevState) => ({
+  //     ...prevState,
+  //     [cardKey]: !prevState[cardKey],
+  //   }));
+  // };
 
   // Toggle the expansion of a specific card
   const toggleExpand = (cardKey) => {
@@ -228,7 +240,9 @@ function DashboardPage() {
     var pieSeries = chart.series.push(new am4charts.PieSeries());
     pieSeries.dataFields.value = "litres";
     pieSeries.dataFields.category = "country";
-    pieSeries.slices.template.states.getKey("active").properties.shiftRadius = 0;
+    pieSeries.slices.template.states.getKey(
+      "active"
+    ).properties.shiftRadius = 0;
     pieSeries.labels.template.fontSize = 13; // Reduce label font size
     pieSeries.slices.template.propertyFields.fill = "color";
 
@@ -259,7 +273,9 @@ function DashboardPage() {
     var pieSeries2 = chart2.series.push(new am4charts.PieSeries());
     pieSeries2.dataFields.value = "value";
     pieSeries2.dataFields.category = "name";
-    pieSeries2.slices.template.states.getKey("active").properties.shiftRadius = 0;
+    pieSeries2.slices.template.states.getKey(
+      "active"
+    ).properties.shiftRadius = 0;
     pieSeries2.labels.template.disabled = true;
     pieSeries2.ticks.template.disabled = true;
     pieSeries2.alignLabels = false;
@@ -461,6 +477,12 @@ function DashboardPage() {
       xaxis = "Weeks";
       yaxis1 = "Last Month";
       yaxis2 = "This Month";
+    } else if (value === "year") {
+      w1 = "Previous Year (kWh)";
+      w2 = "Current Year (kWh)";
+      xaxis = "Month";
+      yaxis1 = "Previous Year (kWh)";
+      yaxis2 = "Current Year (kWh)";
     }
 
     // Update chart data
@@ -605,6 +627,12 @@ function DashboardPage() {
       xaxis = "Weeks";
       yaxis1 = "Last Month";
       yaxis2 = "This Month";
+    } else if (value === "year") {
+      w1 = "Previous Year (kWh)";
+      w2 = "Current Year (kWh)";
+      xaxis = "Month";
+      yaxis1 = "Previous Year (kWh)";
+      yaxis2 = "Current Year (kWh)";
     }
 
     // Update chart data
@@ -709,7 +737,7 @@ function DashboardPage() {
           const convertedItem = { ...item };
           Object.keys(convertedItem).forEach((key) => {
             if (key !== "Time" && typeof convertedItem[key] === "number") {
-              convertedItem[key] = (convertedItem[key] * 1000) / 35.31;
+              convertedItem[key] = ((convertedItem[key] * 1000) / 35.31).toFixed(2);
             }
           });
           return convertedItem;
@@ -763,6 +791,12 @@ function DashboardPage() {
       xaxis = "Weeks";
       yaxis1 = "Last Month";
       yaxis2 = "This Month";
+    } else if (value === "year") {
+      w1 = "Previous Year";
+      w2 = "Current Year";
+      xaxis = "Month";
+      yaxis1 = "Previous Year";
+      yaxis2 = "Current Year";
     }
 
     // Update chart data
@@ -811,7 +845,187 @@ function DashboardPage() {
     // Add a cursor for interactivity
     chart.cursor = new am4charts.XYCursor();
   };
+  const fetchEnergyData4 = async (value) => {
+    setEnergyLoading4(true);
+    setEnergyError4(null);
 
+    const apiUrl5 = `${process.env.NEXT_PUBLIC_API_BASE_URL}/cousmption_per_unitflow.php?value=${value}`;
+
+    try {
+      const response = await fetch(apiUrl5);
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      let data = await response.json();
+
+      // Convert values to m³ if selected
+      // Convert values to m³ if selected
+      if (unit4 === "m3") {
+        data = data.map((item) => {
+          const convertedItem = { ...item };
+          Object.keys(convertedItem).forEach((key) => {
+            if (["Time", "Day", "Weeks", "Month", "year"].includes(key)) return;
+            const numericValue = parseFloat(convertedItem[key]);
+            if (!isNaN(numericValue)) {
+              convertedItem[key] = Number(
+                ((numericValue * 1000) / 35.31).toFixed(1)
+              );
+            }
+          });
+          return convertedItem;
+        });
+        console.log("Converted Data:", data);
+      }
+
+      console.log("Fetched Data for", value, ":", data); // Debug log
+      updateChart4(data, value); // Pass data to chart update function
+    } catch (err) {
+      setEnergyError4("Failed to fetch chart data.");
+      console.error("Error fetching chart data:", err);
+    } finally {
+      setEnergyLoading4(false);
+    }
+  };
+
+  const updateChart4 = (data, value) => {
+    // Create the chart instance in the container with id "chartdiv4"
+    const chart = am4core.create("chartdiv4", am4charts.XYChart);
+    if (chart.logo) {
+      chart.logo.disabled = true;
+    }
+
+    // Set up legend
+    chart.legend = new am4charts.Legend();
+    chart.legend.position = "bottom";
+    chart.legend.valign = "middle";
+    chart.legend.maxWidth = 180;
+    chart.legend.scrollable = true;
+    const markerTemplate = chart.legend.markers.template;
+    markerTemplate.width = 9;
+    markerTemplate.height = 9;
+    chart.legend.paddingBottom = 20;
+    chart.legend.labels.template.fontSize = "12px";
+
+    // Dynamic mapping based on the value parameter:
+    let xField, series1Field, series2Field, series1Name, series2Name;
+
+    if (value === "today") {
+      // Expected API output: { "Time": "00:00", "Yesterday_Flow": number, "Today_Flow": number }
+      xField = "Time";
+      series1Field = "Yesterday";
+      series2Field = "Today";
+      series1Name = "Yesterday";
+      series2Name = "Today";
+    } else if (value === "week") {
+      // Expected API output: { "Days": "Mon", "Last Week Flow": number, "This Week Flow": number }
+      xField = "Day";
+      series1Field = "Last Week";
+      series2Field = "This Week";
+      series1Name = "Last Week";
+      series2Name = "This Week";
+    } else if (value === "month") {
+      // Expected API output: { "Weeks": "Week1", "Last Month": number, "This Month": number }
+      xField = "Weeks";
+      series1Field = "Last Month";
+      series2Field = "This Month";
+      series1Name = "Last Month";
+      series2Name = "This Month";
+    } else if (value === "year") {
+      // Expected API output: { "Month": "Jan", "Previous Year": number, "Current Year": number }
+      xField = "Month";
+      series1Field = "Previous Year";
+      series2Field = "Current Year";
+      series1Name = "Previous Year";
+      series2Name = "Current Year";
+    } else {
+      // Fallback mapping (if needed)
+      xField = "Time";
+      series1Field = "Value1";
+      series2Field = "Value2";
+      series1Name = "Series 1";
+      series2Name = "Series 2";
+    }
+
+    // Set the chart data (ensure your backend sends valid JSON)
+    chart.data = data;
+
+    // Clear any existing axes and series
+    chart.xAxes.clear();
+    chart.yAxes.clear();
+    chart.series.clear();
+
+    // Configure X-Axis (CategoryAxis)
+    const xAxis = chart.xAxes.push(new am4charts.CategoryAxis());
+    xAxis.dataFields.category = xField;
+    xAxis.renderer.grid.template.location = 0;
+    xAxis.renderer.line.strokeOpacity = 1;
+    xAxis.renderer.minGridDistance = 50;
+    xAxis.renderer.cellStartLocation = 0.1;
+    xAxis.renderer.cellEndLocation = 0.9;
+    xAxis.renderer.labels.template.fontSize = "12px";
+    chart.colors.list = [am4core.color("#67B7DC"), am4core.color("#1F5897")];
+
+    // Configure Y-Axis (ValueAxis)
+    const yAxis = chart.yAxes.push(new am4charts.ValueAxis());
+    yAxis.min = 0;
+    yAxis.renderer.labels.template.fontSize = "12px";
+
+    // Helper function: Create a column series
+    function createSeries(field, name) {
+      const series = chart.series.push(new am4charts.ColumnSeries());
+      series.dataFields.valueY = field; // E.g., "Today_Flow" or "This Month"
+      series.dataFields.categoryX = xField; // E.g., "Time" or "Weeks"
+      series.name = name;
+      series.columns.template.tooltipText = "{name}: [bold]{valueY}[/]";
+      series.columns.template.width = am4core.percent(50);
+      series.tooltip.pointerOrientation = "vertical";
+      series.tooltip.dy = -10;
+      series.tooltip.label.textAlign = "middle";
+      series.tooltip.background.stroke = am4core.color("#000");
+      series.tooltip.background.strokeWidth = 2;
+      return series;
+    }
+
+    // Create series for both groups:
+    createSeries(series1Field, series1Name);
+    createSeries(series2Field, series2Name);
+
+    // Add a cursor for interactivity
+    chart.cursor = new am4charts.XYCursor();
+  };
+
+  //3RD CHART
+  useEffect(() => {
+    fetchEnergyData4(timePeriod1); // ✅ Now it calls the correct function
+  }, [unit4, timePeriod1]);
+
+  useEffect(() => {
+    let chart; // Local variable for the chart instance
+
+    // Initialize AmCharts theme and create the chart
+    am4core.useTheme(am4themes_animated);
+    chart = am4core.create("chartdiv4", am4charts.XYChart);
+    if (chart.logo) {
+      chart.logo.disabled = true;
+    }
+    chart.legend = new am4charts.Legend();
+    chart.legend.position = "bottom";
+    chart.legend.valign = "middle";
+    chart.legend.maxWidth = 180;
+    chart.legend.scrollable = true;
+    var markerTemplate = chart.legend.markers.template;
+    markerTemplate.width = 9;
+    markerTemplate.height = 9;
+    chart.legend.paddingBottom = 5;
+
+    // Cleanup on component unmount
+    return () => {
+      if (chart) {
+        chart.dispose();
+      }
+    };
+  }, []); // Only run on mount/unmount
 
   return (
     <main className="p-1">
@@ -858,7 +1072,7 @@ function DashboardPage() {
           {/* Header Section */}
           <div className="flex justify-between items-center">
             <h2 className="text-md font-bold text-gray-500">
-              Energy Consumption
+              Wapda Consumption
             </h2>
             <DateRangePicker1 range={range1} setRange={setRange1} />
           </div>
@@ -893,109 +1107,108 @@ function DashboardPage() {
         </div>
 
         <div className="w-full sm:w-[48%] md:w-[32%] lg:w-[24%] border-t-[5px] border-[#1f5897] bg-white shadow-md rounded-md p-4">
-        {/* Header Section */}
-        <div className="flex justify-between items-center">
-          <h2 className="text-md font-bold text-gray-500">Compressed Air</h2>
-          {/* Dropdown for Unit Selection */}
-          <div className="flex justify-end mt-2">
-            <select
-              value={unit1}
-              onChange={(e) => setUnit1(e.target.value)}
-              className="px-2 py-1 border border-gray-300 rounded-md text-gray-500 text-sm"
-            >
-              <option value="SCF">SCF</option>
-              <option value="m3">m³</option>
-            </select>
+          {/* Header Section */}
+          <div className="flex justify-between items-center">
+            <h2 className="text-md font-bold text-gray-500">Compressed Air</h2>
+            {/* Dropdown for Unit Selection */}
+            <div className="flex justify-end mt-2">
+              <select
+                value={unit1}
+                onChange={(e) => setUnit1(e.target.value)}
+                className="px-2 py-1 border border-gray-300 rounded-md text-gray-500 text-sm ml-[50px]"
+              >
+                <option value="SCF">SCF</option>
+                <option value="m3">m³</option>
+              </select>
+            </div>
+            <DateRangePicker1 range={range2} setRange={setRange2} />
           </div>
-          <DateRangePicker1 range={range2} setRange={setRange2} />
+
+          {/* Date Range Display */}
+          <div className="text-gray-500 text-sm text-left mt-2">
+            <span>
+              {range2.from
+                ? `${format(range2.from, "MMM dd, yyyy")} → ${
+                    range2.to
+                      ? format(range2.to, "MMM dd, yyyy")
+                      : "Select End Date"
+                  }`
+                : "Pick Date Range"}
+            </span>
+          </div>
+
+          {/* Energy Value */}
+          <div className="flex items-center justify-center mt-4 overflow-hidden text-ellipsis">
+            {energyLoading2 ? (
+              <p className="text-gray-500">Loading...</p>
+            ) : energyError2 ? (
+              <p className="text-red-500">{energyError2}</p>
+            ) : energyData2 ? (
+              <p className="text-[20px] text-gray-700 font-bold truncate">
+                {unit1 === "SCF"
+                  ? parseFloat(energyData2).toFixed(1)
+                  : ((parseFloat(energyData2) * 1000) / 35.31).toFixed(1)}{" "}
+                {unit1}
+              </p>
+            ) : (
+              <p className="text-gray-500">No data available</p>
+            )}
+          </div>
         </div>
 
-        {/* Date Range Display */}
-        <div className="text-gray-500 text-sm text-left mt-2">
-          <span>
-            {range2.from
-              ? `${format(range2.from, "MMM dd, yyyy")} → ${
-                  range2.to
-                    ? format(range2.to, "MMM dd, yyyy")
-                    : "Select End Date"
-                }`
-              : "Pick Date Range"}
-          </span>
-        </div>
+        {/* Second Div */}
+        <div className="w-full sm:w-[48%] md:w-[32%] lg:w-[24%] border-t-[5px] border-[#1f5897] bg-white shadow-md rounded-md p-4">
+          {/* Header Section */}
+          <div className="flex justify-between items-center">
+            <h3 className="text-md font-bold text-gray-500">
+              Consumption Per Unit Flow
+            </h3>
+            <div className="flex justify-end mt-2">
+              <select
+                value={unit2}
+                onChange={(e) => setUnit2(e.target.value)}
+                className="px-2 py-1 border border-gray-300 rounded-md text-gray-500 text-sm mr-[3px]"
+              >
+                <option value="SCF / kWh">SCF / kWh</option>
+                <option value="m³ / kWh">m³ / kWh</option>
+              </select>
+            </div>
+            <DateRangePicker1 range={range3} setRange={setRange3} />
+          </div>
 
-        {/* Energy Value */}
-        <div className="flex items-center justify-center mt-4 overflow-hidden text-ellipsis">
-          {energyLoading2 ? (
-            <p className="text-gray-500">Loading...</p>
-          ) : energyError2 ? (
-            <p className="text-red-500">{energyError2}</p>
-          ) : energyData2 ? (
-            <p className="text-[20px] text-gray-700 font-bold truncate">
-              {unit1 === "SCF"
-                ? parseFloat(energyData2).toFixed(1)
-                : ((parseFloat(energyData2) * 1000) / 35.31).toFixed(1)}{" "}
-              {unit1}
-            </p>
-          ) : (
-            <p className="text-gray-500">No data available</p>
-          )}
-        </div>
-      </div>
+          {/* Dropdown for Unit Selection */}
 
-      {/* Second Div */}
-      <div className="w-full sm:w-[48%] md:w-[32%] lg:w-[24%] border-t-[5px] border-[#1f5897] bg-white shadow-md rounded-md p-4">
-        {/* Header Section */}
-        <div className="flex justify-between items-center">
-          <h3 className="text-md font-bold text-gray-500">
-            Consumption Per Unit Flow
-          </h3>
-          <div className="flex justify-end mt-2">
-          <select
-            value={unit2}
-            onChange={(e) => setUnit2(e.target.value)}
-            className="px-2 py-1 border border-gray-300 rounded-md text-gray-500 text-sm"
-          >
-            <option value="SCF / kWh">SCF / kWh</option>
-            <option value="m³ / kWh">m³ / kWh</option>
-          </select>
-        </div>
-          <DateRangePicker1 range={range3} setRange={setRange3} />
-        </div>
+          {/* Date Range Display */}
+          <div className="text-gray-500 text-sm text-left mt-2">
+            <span>
+              {range3.from
+                ? `${format(range3.from, "MMM dd, yyyy")} → ${
+                    range3.to
+                      ? format(range3.to, "MMM dd, yyyy")
+                      : "Select End Date"
+                  }`
+                : "Pick Date Range"}
+            </span>
+          </div>
 
-        {/* Dropdown for Unit Selection */}
-        
-
-        {/* Date Range Display */}
-        <div className="text-gray-500 text-sm text-left mt-2">
-          <span>
-            {range3.from
-              ? `${format(range3.from, "MMM dd, yyyy")} → ${
-                  range3.to
-                    ? format(range3.to, "MMM dd, yyyy")
-                    : "Select End Date"
-                }`
-              : "Pick Date Range"}
-          </span>
+          {/* Energy Value */}
+          <div className="flex items-center justify-center mt-4 overflow-hidden text-ellipsis">
+            {energyLoading3 ? (
+              <p className="text-gray-500">Loading...</p>
+            ) : energyError3 ? (
+              <p className="text-red-500">{energyError3}</p>
+            ) : energyData3 ? (
+              <p className="text-[20px] text-gray-700 font-bold truncate">
+                {unit2 === "SCF / kWh"
+                  ? parseFloat(energyData3).toFixed(1)
+                  : ((parseFloat(energyData3) * 1000) / 35.31).toFixed(1)}{" "}
+                {unit2}
+              </p>
+            ) : (
+              <p className="text-gray-500">No data available</p>
+            )}
+          </div>
         </div>
-
-        {/* Energy Value */}
-        <div className="flex items-center justify-center mt-4 overflow-hidden text-ellipsis">
-          {energyLoading3 ? (
-            <p className="text-gray-500">Loading...</p>
-          ) : energyError3 ? (
-            <p className="text-red-500">{energyError3}</p>
-          ) : energyData3 ? (
-            <p className="text-[20px] text-gray-700 font-bold truncate">
-              {unit2 === "SCF / kWh"
-                ? parseFloat(energyData3).toFixed(1)
-                : ((parseFloat(energyData3) * 1000) / 35.31).toFixed(1)}{" "}
-              {unit2}
-            </p>
-          ) : (
-            <p className="text-gray-500">No data available</p>
-          )}
-        </div>
-      </div>
 
         {/* Add other divs from the first row here (not repeated for brevity)... */}
 
@@ -1021,19 +1234,18 @@ function DashboardPage() {
             {/* Header Section */}
             <div className="flex flex-wrap justify-between items-center">
               <h3 className="text-md font-bold text-gray-500">
-                Area Wise Energy + Compressed Air Usage Breakdown
+                Utilities Consumption Breakdown
               </h3>
               <select
-          id="unit"
-          value={unit}
-          onChange={(e) => setUnit(e.target.value)}
-          className="ml-2 px-2 py-1 border border-gray-300 rounded-md "
-        >
-          <option value="SCF">SCF</option>
-          <option value="m3">m³</option>
-        </select>
+                id="unit"
+                value={unit}
+                onChange={(e) => setUnit(e.target.value)}
+                className="ml-2 px-2 py-1 border border-gray-300 rounded-md ml-[410px]"
+              >
+                <option value="SCF">SCF</option>
+                <option value="m3">m³</option>
+              </select>
               <div className="mt-2 sm:mt-0">
-                
                 <DateRangePicker1 range={range4} setRange={setRange4} />
               </div>
             </div>
@@ -1065,7 +1277,7 @@ function DashboardPage() {
             className={`${
               expandedCards["solarGeneration"]
                 ? "absolute top-0 left-0 w-full h-screen z-[999] bg-white opacity-100 p-6"
-                : "relative w-full sm:w-[48%] md:w-[32%] lg:w-[32%] xl:w-[32%] h-[30vh] bg-white opacity-100"
+                : "relative w-full sm:w-[42%] md:w-[28%] lg:w-[26%] xl:w-[24%] h-[30vh] bg-white opacity-100"
             } border-t-[5px] border-[#1f5897] shadow-md rounded-md transition-all duration-300`}
           >
             {/* Header Section */}
@@ -1081,6 +1293,7 @@ function DashboardPage() {
                   <option value="month">This Month over Last Month</option>
                   <option value="week">This Week over Last Week</option>
                   <option value="today">Today over Yesterday</option>
+                  <option value="year">This Year over Last Year</option>
                 </select>
                 <button
                   onClick={() => toggleExpand("solarGeneration")} // Toggle expansion for this card
@@ -1095,16 +1308,20 @@ function DashboardPage() {
             </div>
 
             {/* Content */}
-            <div className="flex items-center justify-center mb-4">
-              {loading ? (
-                <p className="text-gray-500">Loading...</p>
-              ) : error ? (
-                <p className="text-red-500">{error}</p>
-              ) : null}
-            </div>
 
-            {/* Chart Container */}
-            <div id="chartdiv1" className="w-full h-[83%]"></div>
+            <div className="relative w-full h-[83%] ">
+              {loading && (
+                <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-50 z-10">
+                  <p className="text-gray-500 text-lg mt-[-80px]">Loading...</p>
+                </div>
+              )}
+              {error && (
+                <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-50 z-10">
+                  <p className="text-red-500 text-lg font-semibold">{error}</p>
+                </div>
+              )}
+              <div id="chartdiv1" className="w-full h-full"></div>
+            </div>
 
             {/* Close Button for Expanded View
   {expandedCards && (
@@ -1123,7 +1340,7 @@ function DashboardPage() {
             className={`${
               expandedCards["energyConsumption"]
                 ? "absolute top-0 left-0 w-full h-screen z-[999] bg-white opacity-100 p-6"
-                : "relative w-full sm:w-[48%] md:w-[32%] lg:w-[32%] xl:w-[32%] h-[30vh] bg-white opacity-100"
+                : "relative w-full sm:w-[42%] md:w-[28%] lg:w-[26%] xl:w-[24%] h-[30vh] bg-white opacity-100"
             } border-t-[5px] border-[#1f5897] shadow-md rounded-md transition-all duration-300`}
           >
             {/* Header Section */}
@@ -1139,6 +1356,7 @@ function DashboardPage() {
                   <option value="month">This Month over Last Month</option>
                   <option value="week">This Week over Last Week</option>
                   <option value="today">Today over Yesterday</option>
+                  <option value="year">This Year over Last Year</option>
                 </select>
                 <button
                   onClick={() => toggleExpand("energyConsumption")} // Toggle expansion for this card
@@ -1153,16 +1371,14 @@ function DashboardPage() {
             </div>
 
             {/* Content */}
-            <div className="flex items-center justify-center mb-4">
-              {loading1 ? (
-                <p className="text-gray-500">Loading...</p>
-              ) : error ? (
-                <p className="text-red-500">{error1}</p>
-              ) : null}
+            <div className="relative w-full h-[83%]">
+              {loading1 && (
+                <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-50 z-10">
+                  <p className="text-gray-500  mt-[-80px]">Loading...</p>
+                </div>
+              )}
+              <div id="chartdiv2" className="w-full h-full"></div>
             </div>
-
-            {/* Chart Container */}
-            <div id="chartdiv2" className="w-full h-[83%]"></div>
 
             {/* Close Button for Expanded View
   {expandedCards && (
@@ -1181,34 +1397,37 @@ function DashboardPage() {
             className={`${
               expandedCards["airConsumption"]
                 ? "absolute top-0 left-0 w-full h-screen z-[999] bg-white opacity-100 p-6"
-                : "relative w-full sm:w-[48%] md:w-[32%] lg:w-[32%] xl:w-[32%] h-[30vh] bg-white opacity-100"
+                : "relative w-full sm:w-[42%] md:w-[28%] lg:w-[26%] xl:w-[24%] h-[30vh] bg-white opacity-100"
             } border-t-[5px] border-[#1f5897] shadow-md rounded-md transition-all duration-300`}
           >
             {/* Header Section */}
-            <div className="flex justify-between items-center ">
+            <div className="flex justify-between items-center">
               <h3 className="text-md font-bold text-gray-500 truncate">
                 Total Compressed Air Usage
               </h3>
+              {/* Unit Selection */}
               <select
-          id="unit3"
-          value={unit3}
-          onChange={(e) => setUnit3(e.target.value)}
-          className="ml-2 px-2 py-1 border border-gray-300 rounded-md"
-        >
-          <option value="SCF">SCF</option>
-          <option value="m3">m³</option>
-        </select>
+                id="unit3"
+                value={unit3}
+                onChange={(e) => setUnit3(e.target.value)}
+                className="px-2 py-1 border border-gray-300 rounded-md text-sm flex-shrink-0"
+              >
+                <option value="SCF">SCF</option>
+                <option value="m3">m³</option>
+              </select>
+
               <div className="flex items-center gap-2">
-              <select
-          id="timePeriod"
-          value={timePeriod}
-          onChange={(e) => setTimePeriod(e.target.value)}
-          className="ml-2 px-2 py-1 border border-gray-300 rounded-md"
-        >
-          <option value="month">This Month over Last Month</option>
-          <option value="week">This Week over Last Week</option>
-          <option value="today">Today over Yesterday</option>
-        </select>
+                <select
+                  id="timePeriod"
+                  value={timePeriod}
+                  onChange={(e) => setTimePeriod(e.target.value)}
+                  className="w-[150px] text-gray-600 text-sm bg-white border border-gray-300 rounded-md px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500 flex-shrink-0"
+                >
+                  <option value="month">This Month over Last Month</option>
+                  <option value="week">This Week over Last Week</option>
+                  <option value="today">Today over Yesterday</option>
+                  <option value="year">This Year over Last Year</option>
+                </select>
                 <button
                   onClick={() => toggleExpand("airConsumption")} // Toggle expansion for this card
                   className="p-2 font-bold text-[20px]"
@@ -1222,17 +1441,88 @@ function DashboardPage() {
             </div>
 
             {/* Content */}
-            <div className="flex items-center justify-center mb-4">
-              {loading2 ? (
-                <p className="text-gray-500">Loading...</p>
-              ) : setEnergyError2 ? (
-                <p className="text-red-500">{error2}</p>
-              ) : null}
+            <div className="relative w-full h-[83%]">
+              {/* Loading Indicator */}
+              {loading2 && (
+                <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-75 z-10">
+                  <p className="text-gray-500 mt-[-80px]">Loading...</p>
+                </div>
+              )}
+
+              {/* Chart Container */}
+              <div id="chartdiv3" className="w-full h-full"></div>
+            </div>
+          </div>
+          <div
+            className={`${
+              expandedCards["airConsumption1"]
+                ? "absolute top-0 left-0 w-full h-screen z-[999] bg-white opacity-100 p-6"
+                : "relative w-full sm:w-[44%] md:w-[29%] lg:w-[27%] xl:w-[25%] h-[30vh] bg-white opacity-100"
+            } border-t-[5px] border-[#1f5897] shadow-md rounded-md transition-all duration-300`}
+          >
+            {/* Header with Expand Icon in One Line */}
+            <div className="flex justify-between items-center px-2 py-1">
+              <h3 className="text-md font-bold text-gray-500 truncate">
+                Total Consumption per Unit Flow
+              </h3>
+
+              <div className="flex items-center space-x-2">
+                {/* Unit Selection */}
+                <select
+                  id="unit4"
+                  value={unit4}
+                  onChange={(e) => setUnit4(e.target.value)}
+                  className="px-2 py-1 border border-gray-300 rounded-md"
+                >
+                  <option value="SCF">SCF</option>
+                  <option value="m3">m³</option>
+                </select>
+
+                {/* Time Period Selection */}
+                <select
+                  id="timePeriod"
+                  value={timePeriod1}
+                  onChange={(e) => setTimePeriod1(e.target.value)}
+                  className="w-[160px] text-gray-600 text-sm bg-white border border-gray-300 rounded-md px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                >
+                  <option value="month">This Month over Last Month</option>
+                  <option value="week">This Week over Last Week</option>
+                  <option value="today">Today over Yesterday</option>
+                  <option value="year">This Year over Last Year</option>
+                </select>
+
+                {/* Expand Icon */}
+                <button
+                  onClick={() => toggleExpand("airConsumption1")}
+                  className="p-[-3] font-bold text-[20px]"
+                  title={
+                    expandedCards["airConsumption1"] ? "Minimize" : "Maximize"
+                  }
+                >
+                  {expandedCards["airConsumption1"] ? "⛶" : "⛶"}
+                </button>
+              </div>
             </div>
 
-            {/* Chart Container */}
-            <div id="chartdiv3" className="w-full h-[83%]"></div>
+            {/* Loading/Error Messages */}
+            <div className="relative w-full h-[90%]">
+              {/* Loading/Error Overlay */}
+              {(energyLoading4 || energyError4) && (
+                <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-50 z-10">
+                  {energyLoading4 && (
+                    <p className="text-gray-500 text-lg mt-[-80px]">
+                      Loading...
+                    </p>
+                  )}
+                  {energyError4 && (
+                    <p className="text-red-500 text-lg">{energyError4}</p>
+                  )}
+                </div>
+              )}
 
+              {/* Chart Container */}
+              <div id="chartdiv4" className="w-full h-full"></div>
+            </div>
           </div>
         </div>
       </div>

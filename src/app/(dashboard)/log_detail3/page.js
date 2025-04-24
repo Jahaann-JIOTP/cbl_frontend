@@ -53,7 +53,7 @@ const MeterDataComponent = () => {
     setError("");
 
     try {
-      const response = await axios.get("https://www.cblapi.jiotp.com/cbl_backend/flowshow.php", {
+      const response = await axios.get("https://cblapi.jiotp.com/flowshow.php", {
         params: {
           val: apiType, // Pass `apiType` dynamically based on URL
           s: startDate,

@@ -172,6 +172,19 @@ const DashboardMenu = () => {
                 - View Production
               </Link>
             </li>
+            <li>
+              <Link
+                href="/Compresser_Efficiency"
+                className={`block py-2 px-4 hover:bg-[#E5E5E5] rounded ${
+                  pathname == "/Compresser_Efficiency"
+                    ? "border-t border-b border-[#1f5897] bg-[#95bfed] text-gray-800 font-semibold shadow-md mx-2"
+                    : ""
+                }`}
+              >
+                - View Efficiency
+
+              </Link>
+            </li>
           </ul>
         )}
       </nav>

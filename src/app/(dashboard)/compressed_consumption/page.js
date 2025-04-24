@@ -47,18 +47,25 @@ export default function EnergyUsage() {
 
 
   const fetchChartData2 = async (startDate, endDate) => {
-    const apiUrl2 = `https://www.cblapi.jiotp.com/cbl_backend/compressed_consumption.php?startDate=${startDate}&endDate=${endDate}&Label=Custom Range`;
+    const apiUrl2 = `https://cblapi.jiotp.com/compressed_consumption.php?startDate=${startDate}&endDate=${endDate}&Label=Custom Range`;
 
     try {
       const response = await fetch(apiUrl2);
       let data = await response.json();
+       // Filter out data points with value 0
+        data = data.filter(item => item.value !== 0);
 
       if (unit2 === "m³") {
         data = data.map((item) => ({
           ...item,
-          value: Math.round((item.value * 1000) / 35.31 * 100) / 100, // Round to 2 decimal places
+          value: parseFloat(((item.value / 35.31) * 1000).toFixed(2)),
         }));
       }
+        // Round all values to 2 decimal places
+        data = data.map((item) => ({
+          ...item,
+          value: parseFloat(item.value.toFixed(2)), // Ensure rounding
+      }));
 
       renderChart2(data);
     } catch (error) {

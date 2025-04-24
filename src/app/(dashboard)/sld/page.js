@@ -35,7 +35,7 @@ function Page() {
     const fetchData = async () => {
       try {
         const response = await fetch(
-          "https://www.cblapi.jiotp.com/cbl_backend/diagram_data.php"
+          "https://cblapi.jiotp.com/diagram_data.php"
         );
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);

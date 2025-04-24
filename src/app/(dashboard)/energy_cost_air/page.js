@@ -13,6 +13,7 @@ const ExamplePage = () => {
   const [fetchedData, setFetchedData] = useState(null);
   const [isSubmitted, setIsSubmitted] = useState(false); // Tracks form submission
   const [loading, setLoading] = useState(false);
+  const [unit, setUnit] = useState("SCF"); // Default unit is SCF
 
   const meters = [
     { id: "F1_GWP", name: "GWP" },
@@ -24,7 +25,6 @@ const ExamplePage = () => {
     { id: "F6_Sewing1", name: "PG" },
   ];
   // Mapping for meter-specific suffixes
- 
 
   const toggleModal = () => setIsModalOpen(!isModalOpen);
 
@@ -97,12 +97,15 @@ const ExamplePage = () => {
   if (loading) {
     return <Preloader />; // Always show the preloader while loading is true
   }
+
+  const conversionFactor = unit === "m³" ? 1000 / 35.31 : 1;
+
   const handleExport = () => {
     // Prepare data for Excel
     const headers = [
       "No",
       "Sources",
-      "SCF",
+      unit,
       "Unit Price (PKR)",
       "Total Price (PKR)",
     ];
@@ -243,9 +246,69 @@ const ExamplePage = () => {
             >
               Export
             </button>
+            {/* Unit Selection */}
+            <div className="flex items-center w-full mt-[55px]">
+  <label htmlFor="unitSelection" className="text-gray-700 font-semibold ml-[-80px]">
+    Unit:
+  </label>
+  <select
+                id="unitSelection"
+                value={unit}
+                onChange={(e) => {
+                  setUnit(e.target.value); // Update unit
+                  setFetchedData((prevData) =>
+                    prevData.map((item) => ({
+                      ...item,
+                      convertedConsumption: (
+                        parseFloat(item.consumption) *
+                        (e.target.value === "m³" ? 1000 / 35.31 : 1)
+                      ).toFixed(2),
+                    }))
+                  );
+                }}
+                
+                 className="px-4 py-2 border rounded-md text-gray-700 ml-[10px]"
+              >
+                <option value="SCF">SCF</option>
+                <option value="m³">m³</option>
+              </select>
+</div>
+
+    
+            {/* Start Date and End Date */}
+            <div className="text-right mr-10"> {/* mr-10 se thoda left shift hoga */}
+  <h2 className="text-lg font-bold text-blue-700 whitespace-nowrap">Consumption Report</h2>
+  <div className="text-gray-600 mt-2">
+    <p>Start Date: {startDate}</p>
+    <p>End Date: {endDate}</p>
+  </div>
+</div>
+
+              {/* <select
+                id="unitSelection"
+                value={unit}
+                onChange={(e) => {
+                  setUnit(e.target.value); // Update unit
+                  setFetchedData((prevData) =>
+                    prevData.map((item) => ({
+                      ...item,
+                      convertedConsumption: (
+                        parseFloat(item.consumption) *
+                        (e.target.value === "m³" ? 1000 / 35.31 : 1)
+                      ).toFixed(2),
+                    }))
+                  );
+                }}
+                className="px-4 py-2 border rounded-md text-gray-700"
+                 className="px-4 py-2 border rounded-md text-gray-700 ml-[10px]"
+              >
+                <option value="SCF">SCF</option>
+                <option value="m³">m³</option>
+              </select> */}
+          
 
             {/* Start Date and End Date */}
-            <div className="text-right">
+            {/* <div className="text-right">
               <h2 className="text-lg font-bold text-blue-700">
                 Billing Report
               </h2>
@@ -253,7 +316,7 @@ const ExamplePage = () => {
                 <p>Start Date: {startDate}</p>
                 <p>End Date: {endDate}</p>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
 
@@ -263,7 +326,7 @@ const ExamplePage = () => {
               <tr className="bg-gray-100 text-center text-sm font-semibold text-gray-700">
                 <th className="border border-gray-300 px-4 py-2">No</th>
                 <th className="border border-gray-300 px-4 py-2">Sources</th>
-                <th className="border border-gray-300 px-4 py-2">SCF</th>
+                <th className="border border-gray-300 px-4 py-2">{unit}</th>
                 <th className="border border-gray-300 px-4 py-2">
                   Unit Price (PKR)
                 </th>
@@ -273,34 +336,75 @@ const ExamplePage = () => {
               </tr>
             </thead>
             <tbody>
-              {fetchedData.map((item, index) => {
-                const totalPrice = item.consumption * rates;
-                return (
-                  <tr
-                    key={index}
-                    className={`text-center ${
-                      index % 2 === 0 ? "bg-white" : "bg-gray-50"
-                    }`}
-                  >
-                    <td className="border border-gray-300 px-4 py-2  bg-[#3989c6] text-white font-semibold">
-                      {index + 1}
-                    </td>
-                    <td className="border border-gray-300 px-4 py-2 font-medium text-gray-700">
-                      {meters.find((meter) => meter.id === item.meterId)?.name}
-                    </td>
-                    <td className="border border-gray-300 px-4 py-2 font-medium text-gray-700">
-                      {item.consumption.toFixed(2)}
-                    </td>
-                    <td className="border border-gray-300 px-4 py-2 font-medium text-gray-700">
-                      {rates}
-                    </td>
-                    <td className="border border-gray-300 px-4 py-2 bg-[#3989c6] text-white font-semibold">
-                      {totalPrice.toFixed(2)}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
+  {fetchedData && fetchedData.length > 0 ? (
+    fetchedData.map((item, index) => {
+      const meterId = item.meterId || item.meter_id || null;
+
+      if (!meterId) {
+        console.warn("⚠ Warning: meterId is missing in this item:", item);
+        return null; // Skip this row if meterId is missing
+      }
+
+      // Find the corresponding meter
+      const meter = meters.find(
+        (meter) => meter.id.toLowerCase() === meterId.toLowerCase()
+      );
+      const meterName = meter ? meter.name : "Unknown Source";
+
+      // ✅ Apply conversion only to SCF/m³ column
+      const conversionFactor = unit === "m³" ? 1000 / 35.31 : 1;
+      const consumptionValue = parseFloat(item.consumption) || 0;
+      const convertedConsumption = (
+        consumptionValue * conversionFactor
+      ).toFixed(2);
+
+      // ✅ Ensure valid unit price
+      const unitPrice = parseFloat(rates) || 0;
+
+      // ✅ Keep Total Price calculation unchanged (no conversion applied)
+      const totalPrice = (consumptionValue * unitPrice).toFixed(2);
+
+      return (
+        <tr
+          key={index}
+          className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}
+        >
+          {/* No Column - Blue Background */}
+          <td className="border border-gray-300 px-4 py-2 bg-blue-500 text-white font-semibold text-center">
+            {index + 1}
+          </td>
+
+          {/* Sources Column */}
+          <td className="border border-gray-300 px-4 py-2 text-center">
+            {meterName}
+          </td>
+
+          {/* Dynamic Unit Column (SCF/m³) - Conversion Applied */}
+          <td className="border border-gray-300 px-4 py-2 text-center">
+            {convertedConsumption}
+          </td>
+
+          {/* Unit Price Column */}
+          <td className="border border-gray-300 px-4 py-2 text-center">
+            {unitPrice.toFixed(0)}
+          </td>
+
+          {/* Total Price Column - No Conversion Applied */}
+          <td className="border border-gray-300 px-4 py-2 bg-blue-500 text-white font-semibold text-center">
+            {Number(totalPrice || 0).toLocaleString()}
+          </td>
+        </tr>
+      );
+    })
+  ) : (
+    <tr>
+      <td colSpan="5" className="text-center py-4 text-gray-500">
+        No Data Available
+      </td>
+    </tr>
+  )}
+</tbody>
+
           </table>
         </div>
 
@@ -310,10 +414,11 @@ const ExamplePage = () => {
           <div className="flex justify-between items-center text-lg font-bold text-blue-600">
             <span>GRAND TOTAL</span>
             <span>
-              {fetchedData
-                .reduce((acc, item) => acc + item.consumption * rates, 0)
-                .toFixed(2)}{" "}
-              PKR
+              {`PKR ${Number(
+                fetchedData
+                  .reduce((acc, item) => acc + item.consumption * rates, 0)
+                  .toFixed(0)
+              ).toLocaleString()}`}
             </span>
           </div>
         </div>
@@ -422,6 +527,19 @@ const ExamplePage = () => {
             placeholder="0.0"
             required
           />
+        </div>
+        <div className="hidden">
+          <label className="block text-[13px] font-bold text-[#626469]">
+            Unit
+          </label>
+          <select
+            value={unit}
+            onChange={(e) => setUnit(e.target.value)}
+            className="w-full p-2 border border-[#9f9fa3] rounded-md text-gray-700"
+          >
+            <option value="SCF">SCF</option>
+            <option value="m3">m³</option>
+          </select>
         </div>
 
         {/* Start Date Input */}

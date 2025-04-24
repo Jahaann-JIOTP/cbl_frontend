@@ -4,6 +4,7 @@ import { useState } from "react";
 import * as XLSX from "xlsx";
 import Preloader from "@/components/Preloader";
 
+
 const ExamplePage = () => {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
@@ -12,6 +13,8 @@ const ExamplePage = () => {
   const [fetchedData, setFetchedData] = useState(null);
   const [isSubmitted, setIsSubmitted] = useState(false); // Tracks form submission
   const [loading, setLoading] = useState(false);
+  const [unit, setUnit] = useState("SCF"); // Default value is SCF
+
   const [shifts, setShifts] = useState([
     { name: "Shift 1", startTime: "00:00", endTime: "01:00" },
   ]);
@@ -280,6 +283,8 @@ const ExamplePage = () => {
     return `${formattedHours}:${minutes.toString().padStart(2, "0")} ${period}`;
   }
 
+  
+
   if (isSubmitted && fetchedData) {
     return (
       <div
@@ -349,9 +354,59 @@ const ExamplePage = () => {
             >
               Export
             </button>
+             {/* Unit Selection */}
+             <div className="flex items-center w-full mt-[55px]">
+  <label htmlFor="unitSelection" className="text-gray-700 font-semibold ml-[-80px]">
+    Unit:
+  </label>
+  <select
+  id="unitSelection"
+  value={unit}
+  onChange={(e) => {
+    setUnit(e.target.value); // Update unit
+    setFetchedData((prevData) =>
+      prevData.map((item) => ({
+        ...item,
+        convertedConsumption: (parseFloat(item.consumption) * (e.target.value === "m³" ? 1000 / 35.31 : 1)).toFixed(2),
+      }))
+    );
+  }}
+  className="px-4 py-2 border rounded-md text-gray-700"
+>
+  <option value="SCF">SCF</option>
+  <option value="m³">m³</option>
+</select>
+</div>
 
+    
             {/* Start Date and End Date */}
             <div className="text-right">
+  <h2 className="text-lg font-bold text-blue-700 whitespace-nowrap">Consumption Report</h2>
+  <div className="text-gray-600 mt-2">
+    <p>Start Date: {startDate}</p>
+    <p>End Date: {endDate}</p>
+  </div>
+</div>
+             {/* <select
+  id="unitSelection"
+  value={unit}
+  onChange={(e) => {
+    setUnit(e.target.value); // Update unit
+    setFetchedData((prevData) =>
+      prevData.map((item) => ({
+        ...item,
+        convertedConsumption: (parseFloat(item.consumption) * (e.target.value === "m³" ? 1000 / 35.31 : 1)).toFixed(2),
+      }))
+    );
+  }}
+  className="px-4 py-2 border rounded-md text-gray-700"
+>
+  <option value="SCF">SCF</option>
+  <option value="m³">m³</option>
+</select>
+
+            {/* Start Date and End Date */}
+            {/* <div className="text-right">
               <h2 className="text-lg font-bold text-blue-700">
                 Consumption Report
               </h2>
@@ -359,7 +414,7 @@ const ExamplePage = () => {
                 <p>Start Date: {startDate}</p>
                 <p>End Date: {endDate}</p>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
 
@@ -394,91 +449,99 @@ const ExamplePage = () => {
                       </th>
                     ))}
                     <th className="border border-gray-300 px-4 py-2">
-                      Total (SCF)
+                      Total({unit})
                     </th>
                   </tr>
                 </thead>
 
                 <tbody>
-                  {/* Rows for Each Source */}
-                  {selectedMeters.map((meterId, meterIndex) => {
-                    const meterName =
-                      meters.find((meter) => meter.id === meterId)?.name ||
-                      "Unknown";
-                    const total = shifts.reduce(
-                      (sum, shift) =>
-                        sum + (dateGroup[meterId]?.[shift.name] || 0),
-                      0
-                    );
-                    // console.log("Complete dateGroup object:", dateGroup);
+  {/* Define conversionFactor before using it inside loops */}
+  {selectedMeters.map((meterId, meterIndex) => {
+    const meterName =
+      meters.find((meter) => meter.id === meterId)?.name || "Unknown Source";
 
-                    return (
-                      <tr
-                        key={meterIndex}
-                        className={`text-center ${
-                          meterIndex % 2 === 0 ? "bg-white" : "bg-green-50"
-                        }`}
-                      >
-                        {/* Source Name */}
-                        <td className="border border-gray-300 px-4 py-2 text-left">
-                          {meterName}
-                        </td>
+    // ✅ Define conversionFactor inside the main map function
+    const conversionFactor = unit === "m³" ? 1000 / 35.31 : 1;
 
-                        {/* Shift Data */}
-                        {shifts.map((shift) => (
-                          <td
-                            key={shift.name}
-                            className="border border-gray-300 px-4 py-2"
-                          >
-                            {dateGroup[meterId]?.[shift.name]?.toFixed(2) ||
-                              "0.00"}
-                          </td>
-                        ))}
+    const total = shifts.reduce(
+      (sum, shift) => sum + (dateGroup[meterId]?.[shift.name] || 0),
+      0
+    );
 
-                        {/* Total for Source */}
-                        <td className="border border-gray-300 px-4 py-2 font-bold">
-                          {total.toFixed(2)}
-                        </td>
-                      </tr>
-                    );
-                  })}
+    // ✅ Convert Total Consumption based on unit
+    const convertedTotal = (total * conversionFactor).toFixed(2);
 
-                  {/* Total Row for All Sources */}
-                  <tr className="bg-[#b4d5f8] text-center font-bold">
-                    <td className="border border-gray-300 px-4 py-2 text-left">
-                      Total
-                    </td>
-                    {shifts.map((shift) => {
-                      const shiftTotal = selectedMeters.reduce(
-                        (sum, meterId) =>
-                          sum + (dateGroup[meterId]?.[shift.name] || 0),
-                        0
-                      );
-                      return (
-                        <td
-                          key={shift.name}
-                          className="border border-gray-300 px-4 py-2"
-                        >
-                          {shiftTotal.toFixed(2)}
-                        </td>
-                      );
-                    })}
-                    <td className="border border-gray-300 px-4 py-2 font-bold">
-                      {selectedMeters
-                        .reduce(
-                          (grandTotal, meterId) =>
-                            grandTotal +
-                            shifts.reduce(
-                              (sum, shift) =>
-                                sum + (dateGroup[meterId]?.[shift.name] || 0),
-                              0
-                            ),
-                          0
-                        )
-                        .toFixed(2)}
-                    </td>
-                  </tr>
-                </tbody>
+    return (
+      <tr
+        key={meterIndex}
+        className={`text-center ${
+          meterIndex % 2 === 0 ? "bg-white" : "bg-green-50"
+        }`}
+      >
+        {/* Source Name */}
+        <td className="border border-gray-300 px-4 py-2 text-left">
+          {meterName}
+        </td>
+
+        {/* Shift Data */}
+        {shifts.map((shift) => {
+          const shiftConsumption = dateGroup[meterId]?.[shift.name] || 0;
+          const convertedShiftConsumption = (
+            shiftConsumption * conversionFactor
+          ).toFixed(2);
+          return (
+            <td key={shift.name} className="border border-gray-300 px-4 py-2">
+              {convertedShiftConsumption}
+            </td>
+          );
+        })}
+
+        {/* Total for Source */}
+        <td className="border border-gray-300 px-4 py-2 font-bold">
+          {convertedTotal}
+        </td>
+      </tr>
+    );
+  })}
+
+  {/* Total Row for All Sources */}
+  <tr className="bg-[#b4d5f8] text-center font-bold">
+    <td className="border border-gray-300 px-4 py-2 text-left">Total</td>
+    {shifts.map((shift) => {
+      const shiftTotal = selectedMeters.reduce(
+        (sum, meterId) => sum + (dateGroup[meterId]?.[shift.name] || 0),
+        0
+      );
+
+      // ✅ Define conversionFactor before using it here
+      const conversionFactor = unit === "m³" ? 1000 / 35.31 : 1;
+      const convertedShiftTotal = (shiftTotal * conversionFactor).toFixed(2);
+
+      return (
+        <td key={shift.name} className="border border-gray-300 px-4 py-2">
+          {convertedShiftTotal}
+        </td>
+      );
+    })}
+
+    <td className="border border-gray-300 px-4 py-2 font-bold">
+      {selectedMeters
+        .reduce(
+          (grandTotal, meterId) =>
+            grandTotal +
+            shifts.reduce(
+              (sum, shift) => sum + (dateGroup[meterId]?.[shift.name] || 0),
+              0
+            ),
+          0
+        )
+        .toFixed(2)}{" "}
+      
+    </td>
+  </tr>
+</tbody>
+
+
               </table>
             </div>
           ))}
@@ -616,6 +679,19 @@ const ExamplePage = () => {
           </button>
         </div>
 
+        <div>
+            <label className="block text-[13px] font-bold text-[#626469]">
+              Unit
+            </label>
+            <select
+              value={unit}
+              onChange={(e) => setUnit(e.target.value)}
+              className="w-full p-2 border border-[#9f9fa3] rounded-md text-gray-700"
+            >
+              <option value="SCF">SCF</option>
+              <option value="m3">m³</option>
+            </select>
+          </div>
         {/* Start Date Input */}
         <div>
           <label className="block text-[13px] font-bold text-[#626469]">

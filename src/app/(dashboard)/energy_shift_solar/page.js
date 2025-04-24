@@ -43,8 +43,8 @@ const ExamplePage = () => {
   };
 
   const meters = [
-    { id: "U11_SM11", name: "Solar 1" },
-    { id: "U12_SM12", name: "Solar 2" },
+    { id: "U11_SM11", name: "Solar SPNG" },
+    { id: "U12_SM12", name: "Solar SWNG" },
   ];
 
   const toggleModal = () => setIsModalOpen(!isModalOpen);

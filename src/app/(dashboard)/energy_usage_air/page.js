@@ -54,6 +54,11 @@ const ExamplePage = () => {
       alert("Please fill out all fields");
       return;
     }
+    // const data = rows.map((row) => [
+    //   row.date,
+    //   ...selectedMeters.map((id) => row[id] || ""),  // Ensure values exist
+    //   row.subTotal,
+    // ]);
 
     const suffix = "TotalFlow"; // Fixed suffix
     const apiUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/energyusageair.php`;
@@ -117,52 +122,56 @@ const ExamplePage = () => {
   if (loading) {
     return <Preloader />; // Always show the preloader while loading is true
   }
-
   const handleExport = () => {
+    if (!fetchedData || fetchedData.length === 0) {
+        console.error("No data available for export.");
+        return;
+    }
+
     const headers = [
-      "Date",
-      ...selectedMeters.map((id) => meters.find((meter) => meter.id === id)?.name),
-      `Sub Total (${unit})`,
+        "Date",
+        ...selectedMeters.map((id) => meters.find((meter) => meter.id === id)?.name || ""),
+        `Sub Total (${unit})`,
     ];
 
-    const rows = fetchedData.map((row) => {
-      const subTotal = selectedMeters.reduce((sum, id) => sum + (row[id] || 0), 0);
+    // ✅ Define `rows` before using it
+    let rows = [];  // Ensure `rows` is initialized
 
-      return [
+    // ✅ Populate `rows` with fetched data
+    rows = fetchedData.map((row) => [
         row.date,
-        ...selectedMeters.map((id) => (row[id] !== undefined ? row[id].toFixed(2) : "0")),
-        subTotal.toFixed(2),
-      ];
-    });
+        ...selectedMeters.map((id) => row[id] || 0),
+        selectedMeters.reduce((sum, id) => sum + (row[id] || 0), 0),
+    ]);
 
+    // ✅ Calculate Total Row and Push to `rows`
     const totalRow = [
-      `Total (${unit})`,
-      ...selectedMeters.map((id) => {
-        const total = fetchedData.reduce((sum, row) => sum + (row[id] || 0), 0);
-        return total.toFixed(2);
-      }),
-      fetchedData
-        .reduce(
-          (grandTotal, row) =>
-            grandTotal +
-            selectedMeters.reduce((sum, id) => sum + (row[id] || 0), 0),
-          0
-        )
-        .toFixed(2),
+        "Total",
+        ...selectedMeters.map((id) =>
+            fetchedData
+                .reduce((grandTotal, row) => grandTotal + (row[id] || 0), 0)
+                .toFixed(0)
+        ),
+        selectedMeters.reduce(
+            (sum, id) =>
+                fetchedData.reduce((grandTotal, row) => grandTotal + (row[id] || 0), 0),
+            0
+        ).toFixed(0),
     ];
-    rows.push(totalRow);
+    
+    rows.push(totalRow); // ✅ Now `rows` is correctly initialized before pushing
 
+    // ✅ Now Create Excel Sheet
     const worksheet = XLSX.utils.aoa_to_sheet([headers, ...rows]);
     const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(
-      workbook,
-      worksheet,
-      "Compressed Air Energy Usage Report"
-    );
 
-// Export to Excel file
+    // ✅ Shortened Sheet Name to fix error
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Energy Usage");
+
+    // ✅ Export Excel File
     XLSX.writeFile(workbook, "Energy_Usage_Report.xlsx");
-  };
+};
+
 
   if (isSubmitted && fetchedData) {
     return (
@@ -229,29 +238,30 @@ const ExamplePage = () => {
             </button>
     
             {/* Unit Selection */}
-            <div className="flex items-center">
-              <label htmlFor="unitSelection" className="text-gray-700 font-semibold mr-2">
-                Unit:
-              </label>
-              <select
-                id="unitSelection"
-                value={unit}
-                onChange={(e) => setUnit(e.target.value)}
-                className="px-4 py-2 border rounded-md text-gray-700"
-              >
-                <option value="SCF">SCF</option>
-                <option value="m3">m³</option>
-              </select>
-            </div>
+            <div className="flex items-center w-full mt-[55px]">
+  <label htmlFor="unitSelection" className="text-gray-700 font-semibold ml-[-80px]">
+    Unit:
+  </label>
+  <select
+    id="unitSelection"
+    value={unit}
+    onChange={(e) => setUnit(e.target.value)}
+    className="px-4 py-2 border rounded-md text-gray-700 ml-[10px]"
+  >
+    <option value="SCF">SCF</option>
+    <option value="m3">m³</option>
+  </select>
+</div>
+
     
             {/* Start Date and End Date */}
             <div className="text-right">
-              <h2 className="text-lg font-bold text-blue-700">Consumption Report</h2>
-              <div className="text-gray-600 mt-2">
-                <p>Start Date: {startDate}</p>
-                <p>End Date: {endDate}</p>
-              </div>
-            </div>
+  <h2 className="text-lg font-bold text-blue-700 whitespace-nowrap">Consumption Report</h2>
+  <div className="text-gray-600 mt-2">
+    <p>Start Date: {startDate}</p>
+    <p>End Date: {endDate}</p>
+  </div>
+</div>
           </div>
         </div>
     
@@ -294,15 +304,15 @@ const ExamplePage = () => {
                       <td key={meterId} className="border border-gray-300 px-4 py-2 font-medium text-gray-700">
                         {row[meterId] !== undefined
                           ? (unit === "m3"
-                              ? (row[meterId] * 0.0283168).toFixed(2)
-                              : row[meterId].toFixed(2))
+                              ? (row[meterId] * 1000 / 35.31).toFixed(0)
+                              : row[meterId].toFixed(0))
                           : "0"}
                       </td>
                     ))}
                     <td className="border border-gray-300 px-4 py-2 font-medium text-gray-700">
                       {unit === "m3"
-                        ? (subTotal * 0.0283168).toFixed(2)
-                        : subTotal.toFixed(2)}
+                        ? (subTotal * 1000 / 35.31).toFixed(0)
+                        : subTotal.toFixed(0)}
                     </td>
                   </tr>
                 );
@@ -316,8 +326,8 @@ const ExamplePage = () => {
                   return (
                     <td key={meterId} className="border border-gray-300 px-4 py-2">
                       {unit === "m3"
-                        ? (total * 0.0283168).toFixed(2)
-                        : total.toFixed(2)}
+                        ? (total * 1000 / 35.31).toFixed(0)
+                        : total.toFixed(0)}
                     </td>
                   );
                 })}
@@ -328,7 +338,7 @@ const ExamplePage = () => {
                           grandTotal +
                           selectedMeters.reduce((sum, meterId) => sum + (row[meterId] || 0), 0),
                         0
-                      ) * 0.0283168).toFixed(2)
+                      ) *1000 / 35.31).toFixed(0)
                     : fetchedData
                         .reduce(
                           (grandTotal, row) =>
@@ -336,7 +346,7 @@ const ExamplePage = () => {
                             selectedMeters.reduce((sum, meterId) => sum + (row[meterId] || 0), 0),
                           0
                         )
-                        .toFixed(2)}
+                        .toFixed(0)}
                 </td>
               </tr>
             </tbody>

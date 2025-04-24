@@ -20,9 +20,9 @@ function CustomTrend() {
     "Atlas Copco": "U_4_EM4",
     "Compressor Aux": "U_5_EM5",
     "Ganzair Compressor": "U_6_EM6",
-    "New Centac Comp#2": "U_7_EM7",
+    "New Centac Comp#2": "U_9_EM9",
     "ML-132": "U_8_EM8",
-    "New Centac Comp#1": "U_9_EM9",
+    "New Centac Comp#1": "U_7_EM7",
     "Kaeser Compressor": "U_10_EM10",
     Dryer: "U_15",
     "DSD281(Kaeser)+ML-15": "U_21",
@@ -304,7 +304,7 @@ function CustomTrend() {
       //minimum range
       var range1 = valueAxis.axisRanges.create();
       range1.value = min;
-      range1.grid.stroke = am4core.color("#7be382");
+      range1.grid.stroke = am4core.color("#02b169");
       range1.grid.strokeWidth = 2;
       range1.grid.strokeOpacity = 1;
       range1.label.inside = true;

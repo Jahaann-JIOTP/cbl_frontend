@@ -23,7 +23,7 @@ function DashboardPage() {
     U_7_EM7_ActivePowerTotal_kW: "New Centac Comp#2",
     U_8_EM8_Activepower_Total_W: "ML-132",
     U_9_EM9_ActivePowerTotal_kW: "New Centac Comp#1",
-    U_10_EM10_Activepower_Total_W: "Kaeser Compressor",
+    // U_10_EM10_Activepower_Total_W: "Kaeser Compressor",
     U_15_ActivePower_Total_kW: "Dryer",
     U_21_ActivePower_Total_kW: "DSD281(Kaeser)+ML-15",
   };
@@ -80,7 +80,7 @@ function DashboardPage() {
 
       try {
         const response = await fetch(
-          `https://www.cblapi.jiotp.com/cbl_backend/ozoncycle.php?start_date=${startDate}&end_date=${endDate}&meter=${selectedMeters.join(
+          `https://cblapi.jiotp.com/ozoncycle.php?start_date=${startDate}&end_date=${endDate}&meter=${selectedMeters.join(
             ","
           )}`
         );

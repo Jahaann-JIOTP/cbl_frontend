@@ -27,7 +27,7 @@ const AddProduction = () => {
       return;
     }
 
-    const url = "https://www.cblapi.jiotp.com/cbl_backend/add_production.php";
+    const url = "https://cblapi.jiotp.com/add_production.php";
 
     fetch(url, {
       method: "POST",
@@ -48,7 +48,7 @@ const AddProduction = () => {
   };
 
   const fetchTableData = () => {
-    const url = "https://www.cblapi.jiotp.com/cbl_backend/get_production.php"; // Endpoint to fetch table data
+    const url = "https://cblapi.jiotp.com/get_production.php"; // Endpoint to fetch table data
 
     fetch(url)
       .then((response) => response.json())
@@ -67,7 +67,7 @@ const AddProduction = () => {
   const confirmDelete = () => {
     if (!deleteRow) return;
 
-    const url = "https://www.cblapi.jiotp.com/cbl_backend/delete_production.php";
+    const url = "https://cblapi.jiotp.com/delete_production.php";
 
     fetch(url, {
       method: "POST",
@@ -169,7 +169,7 @@ const AddProduction = () => {
               <th className="border border-gray-300 px-4 py-2">Sewing2</th>
               <th className="border border-gray-300 px-4 py-2">Textile</th>
               <th className="border border-gray-300 px-4 py-2">Sewing1</th>
-              <th className="border border-gray-300 px-4 py-2">PG </th>
+              <th className="border border-gray-300 px-4 py-2">PG</th>
               <th className="border border-gray-300 px-4 py-2">Actions</th>
             </tr>
           </thead>

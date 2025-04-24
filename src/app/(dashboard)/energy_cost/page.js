@@ -19,9 +19,9 @@ const ExamplePage = () => {
     { id: "U_4_EM4", name: "Atlas Copco" },
     { id: "U_5_EM5", name: "Compressor Aux" },
     { id: "U_6_EM6", name: "Ganzair Compressor" },
-    { id: "U_7_EM7", name: "New Centac Comp#2" },
+    { id: "U_9_EM9", name: "New Centac Comp#2" },
     { id: "U_8_EM8", name: "ML-132" },
-    { id: "U_9_EM9", name: "New Centac Comp#1" },
+    { id: "U_7_EM7", name: "New Centac Comp#1" },
     { id: "U_10_EM10", name: "Kaeser Compressor" },
     { id: "U_15", name: "Dryer" },
     { id: "U_22", name: "Solar Hostels" },
@@ -305,13 +305,13 @@ const ExamplePage = () => {
                       {meters.find((meter) => meter.id === item.meterId)?.name}
                     </td>
                     <td className="border border-gray-300 px-4 py-2 font-medium text-gray-700">
-                      {item.consumption.toFixed(2)}
+                      {Number(item.consumption.toFixed(0)).toLocaleString()}
                     </td>
                     <td className="border border-gray-300 px-4 py-2 font-medium text-gray-700">
                       {rates}
                     </td>
                     <td className="border border-gray-300 px-4 py-2 bg-[#3989c6] text-white font-semibold">
-                      {totalPrice.toFixed(2)}
+                      {Number(totalPrice.toFixed(0)).toLocaleString()}
                     </td>
                   </tr>
                 );
@@ -326,10 +326,11 @@ const ExamplePage = () => {
           <div className="flex justify-between items-center text-lg font-bold text-blue-600">
             <span>GRAND TOTAL</span>
             <span>
-              {fetchedData
-                .reduce((acc, item) => acc + item.consumption * rates, 0)
-                .toFixed(2)}{" "}
-              PKR
+              {`PKR ${Number(
+                fetchedData
+                  .reduce((acc, item) => acc + item.consumption * rates, 0)
+                  .toFixed(0)
+              ).toLocaleString()}`}
             </span>
           </div>
         </div>
