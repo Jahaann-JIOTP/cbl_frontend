@@ -47,7 +47,7 @@ const Logs = () => {
     setError("");
 
     try {
-      const response = await axios.get("https://cblapi.jiotp.com/solarshow.php", {
+      const response = await axios.get("https://cblapi.jahaann.com/solarshow.php", {
         params: {
           val: apiType, // Pass `apiType` dynamically based on URL
           s: startDate,

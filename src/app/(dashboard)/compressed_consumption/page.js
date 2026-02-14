@@ -47,7 +47,7 @@ export default function EnergyUsage() {
 
 
   const fetchChartData2 = async (startDate, endDate) => {
-    const apiUrl2 = `https://cblapi.jiotp.com/compressed_consumption.php?startDate=${startDate}&endDate=${endDate}&Label=Custom Range`;
+    const apiUrl2 = `https://cblapi.jahaann.com/compressed_consumption.php?startDate=${startDate}&endDate=${endDate}&Label=Custom Range`;
 
     try {
       const response = await fetch(apiUrl2);

@@ -10,7 +10,7 @@ function Page() {
   const fetchData = async () => {
     try {
       const response = await fetch(
-        "https://cblapi.jiotp.com/diagram_data1.php"
+        "https://cblapi.jahaann.com/diagram_data1.php"
       );
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);

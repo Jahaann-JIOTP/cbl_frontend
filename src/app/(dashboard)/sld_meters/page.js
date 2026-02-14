@@ -67,18 +67,18 @@ const MeterDataComponent = () => {
 
   useEffect(() => {
     // Set the initial link for the default tab
-    setLink(`https://cblapi.jiotp.com/volts_data.php?meter=${meter}`);
+    setLink(`https://cblapi.jahaann.com/volts_data.php?meter=${meter}`);
   }, [meter]);
 
   const handleTabSwitch = (tab) => {
     setActiveTab(tab);
 
     if (tab === "volts") {
-      setLink(`https://cblapi.jiotp.com/volts_data.php?meter=${meter}`);
+      setLink(`https://cblapi.jahaann.com/volts_data.php?meter=${meter}`);
     } else if (tab === "power") {
-      setLink(`https://cblapi.jiotp.com/power_data.php?meter=${meter}`);
+      setLink(`https://cblapi.jahaann.com/power_data.php?meter=${meter}`);
     } else if (tab === "energy") {
-      setLink(`https://cblapi.jiotp.com/energy_data.php?meter=${meter}`);
+      setLink(`https://cblapi.jahaann.com/energy_data.php?meter=${meter}`);
     } else {
       setLink(""); // Handle other cases if needed
     }

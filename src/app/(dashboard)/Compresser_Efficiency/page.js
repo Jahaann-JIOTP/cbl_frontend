@@ -49,7 +49,7 @@ const meterNames = {
       
           try {
             const response = await fetch(
-              `https://cblapi.jiotp.com/add_pro1.php?start=${startDate || ""}&end=${endDate || ""}`
+              `https://cblapi.jahaann.com/add_pro1.php?start=${startDate || ""}&end=${endDate || ""}`
             );
             const data = await response.json();
       
@@ -145,7 +145,7 @@ const meterNames = {
         
           try {
             const response = await fetch(
-              `https://cblapi.jiotp.com/add_pro1.php?start_date=${apiStartDate}&end_date=${apiEndDate}`
+              `https://cblapi.jahaann.com/add_pro1.php?start_date=${apiStartDate}&end_date=${apiEndDate}`
             );
             const data = await response.json();
         

@@ -27,7 +27,7 @@ const AddProduction = () => {
       return;
     }
 
-    const url = "https://cblapi.jiotp.com/add_production.php";
+    const url = "https://cblapi.jahaann.com/add_production.php";
 
     fetch(url, {
       method: "POST",
@@ -48,7 +48,7 @@ const AddProduction = () => {
   };
 
   const fetchTableData = () => {
-    const url = "https://cblapi.jiotp.com/get_production.php"; // Endpoint to fetch table data
+    const url = "https://cblapi.jahaann.com/get_production.php"; // Endpoint to fetch table data
 
     fetch(url)
       .then((response) => response.json())
@@ -67,7 +67,7 @@ const AddProduction = () => {
   const confirmDelete = () => {
     if (!deleteRow) return;
 
-    const url = "https://cblapi.jiotp.com/delete_production.php";
+    const url = "https://cblapi.jahaann.com/delete_production.php";
 
     fetch(url, {
       method: "POST",

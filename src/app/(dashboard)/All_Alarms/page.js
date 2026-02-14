@@ -33,7 +33,7 @@ const AlarmTable = () => {
   useEffect(() => {
     const fetchData = () => {
       axios
-        .get("https://cblapi.jiotp.com/comparison1.php") // Update to your backend API URL
+        .get("https://cblapi.jahaann.com/comparison1.php") // Update to your backend API URL
         .then((response) => {
           console.log("API Response:", response.data); // Debugging API response
           if (response.data && Array.isArray(response.data.alarms)) {

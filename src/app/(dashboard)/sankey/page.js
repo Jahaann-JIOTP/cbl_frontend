@@ -19,8 +19,8 @@ function DashboardPage() {
     const endDate = range4.to ? format(range4.to, "yyyy-MM-dd") : null;
 
     if (startDate && endDate) {
-      // const apiUrl4 = `https://cblapi.jiotp.com/backend.php?start_date=${startDate}&end_date=${endDate}&Label=Custom Range`;
-      const apiUrl4 = `https://cblapi.jiotp.com/backend.php?start_date=${startDate}&end_date=${endDate}&Label=Custom Range`;
+      // const apiUrl4 = `https://cblapi.jahaann.com/backend.php?start_date=${startDate}&end_date=${endDate}&Label=Custom Range`;
+      const apiUrl4 = `https://cblapi.jahaann.com/backend.php?start_date=${startDate}&end_date=${endDate}&Label=Custom Range`;
       // Fetch data from API
       fetch(apiUrl4)
         .then((response) => {

@@ -28,7 +28,7 @@ const Production = () => {
 
     try {
       const response = await fetch(
-        `https://cblapi.jiotp.com/add_pro_backend.php?start_date=${startDate}&end_date=${endDate}`
+        `https://cblapi.jahaann.com/add_pro_backend.php?start_date=${startDate}&end_date=${endDate}`
       );
       const data = await response.json();
 
@@ -79,7 +79,7 @@ const Production = () => {
 
     try {
       const response = await fetch(
-        `https://cblapi.jiotp.com/add_pro_backend.php?start_date=${startDate}&end_date=${endDate}`
+        `https://cblapi.jahaann.com/add_pro_backend.php?start_date=${startDate}&end_date=${endDate}`
       );
       const data = await response.json();
 

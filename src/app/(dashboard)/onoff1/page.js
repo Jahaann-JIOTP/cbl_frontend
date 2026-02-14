@@ -80,7 +80,7 @@ function DashboardPage() {
 
       try {
         const response = await fetch(
-          `https://cblapi.jiotp.com/ozoncycle.php?start_date=${startDate}&end_date=${endDate}&meter=${selectedMeters.join(
+          `https://cblapi.jahaann.com/ozoncycle.php?start_date=${startDate}&end_date=${endDate}&meter=${selectedMeters.join(
             ","
           )}`
         );

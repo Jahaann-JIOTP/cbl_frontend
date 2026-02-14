@@ -112,7 +112,7 @@ const MeterDataComponent = () => {
     setError("");
 
     try {
-      const response = await axios.get("https://cblapi.jiotp.com/log3_data.php", {
+      const response = await axios.get("https://cblapi.jahaann.com/log3_data.php", {
         params: {
           type,
           meters: meter,

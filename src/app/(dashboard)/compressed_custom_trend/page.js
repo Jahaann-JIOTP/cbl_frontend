@@ -35,7 +35,7 @@ function CustomTrendcom() {
 
   useEffect(() => {
     if (startDate && endDate && selectedMeter.length > 0 && selectedParameter) {
-      const apiUrl = `https://cblapi.jiotp.com/custom_air.php?start_date=${startDate}&end_date=${endDate}&meterId=${selectedMeter
+      const apiUrl = `https://cblapi.jahaann.com/custom_air.php?start_date=${startDate}&end_date=${endDate}&meterId=${selectedMeter
         .map((m) => meterMapping[m])
         .join(",")}&suffixes=${parameterMapping[selectedParameter]}`;
 

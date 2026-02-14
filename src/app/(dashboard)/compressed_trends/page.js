@@ -62,7 +62,7 @@ export default function EnergyUsage() {
   }, []);
 
   const fetchChartData1 = async (startDate, endDate) => {
-    const apiUrl1 = `https://cblapi.jiotp.com/air_flowrate.php?startDate=${startDate}&endDate=${endDate}&Label=Custom Range`;
+    const apiUrl1 = `https://cblapi.jahaann.com/air_flowrate.php?startDate=${startDate}&endDate=${endDate}&Label=Custom Range`;
 
     try {
       const response = await fetch(apiUrl1);
@@ -82,7 +82,7 @@ export default function EnergyUsage() {
   };
 
   const fetchChartData2 = async (startDate, endDate) => {
-    const apiUrl2 = `https://cblapi.jiotp.com/air_totalflowrate.php?startDate=${startDate}&endDate=${endDate}&Label=Custom Range`;
+    const apiUrl2 = `https://cblapi.jahaann.com/air_totalflowrate.php?startDate=${startDate}&endDate=${endDate}&Label=Custom Range`;
 
     try {
       const response = await fetch(apiUrl2);

@@ -21,7 +21,7 @@ const Page = () => {
 
       try {
         const response = await axios.get(
-          `https://cblapi.jiotp.com/comparison2.php?filter=${filter}`
+          `https://cblapi.jahaann.com/comparison2.php?filter=${filter}`
         );
 
         // Validate and process response

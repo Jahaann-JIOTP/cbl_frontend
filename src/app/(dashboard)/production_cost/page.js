@@ -62,7 +62,7 @@ const ExamplePage = () => {
       // Prepare query parameters
       const meterIds = encodeURIComponent(JSON.stringify(selectedMeters));
       const suffixes = encodeURIComponent(JSON.stringify(["TotalFlow"])); // Fixed suffix
-      const apiUrl = `https://cblapi.jiotp.com/production_cost_report.php?meterIds=${meterIds}&suffixes=${suffixes}&start_date=${startDate}&end_date=${endDate}`;
+      const apiUrl = `https://cblapi.jahaann.com/production_cost_report.php?meterIds=${meterIds}&suffixes=${suffixes}&start_date=${startDate}&end_date=${endDate}`;
 
       const response = await fetch(apiUrl);
 
